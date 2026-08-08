@@ -1,0 +1,8 @@
+.expo-scaffold
+.expo
+dist
+dist-*
+artifacts
+android
+node_modules
+package-lock.json
