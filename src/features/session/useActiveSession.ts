@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 
 import { getRepositories } from '@/data/database/initializeDatabase';
+import { getCaseById } from '@/content/cases/catalog';
+import { reconcileActiveSession } from '@/engine/session/reconcileActiveSession';
 import { logger } from '@/services/logger/logger';
 import { createSession, useSessionStore } from '@/stores/useSessionStore';
 
-type SessionLoadStatus = 'loading' | 'ready' | 'error';
+export type SessionLoadStatus = 'loading' | 'ready' | 'recovered' | 'error';
 
 export function useActiveSession(caseId: string): SessionLoadStatus {
   const session = useSessionStore((state) => state.session);
@@ -18,12 +20,24 @@ export function useActiveSession(caseId: string): SessionLoadStatus {
       return;
     }
     let active = true;
-    void getRepositories()
-      .sessions.get(caseId)
-      .then((saved) => {
+    const repositories = getRepositories();
+    void repositories.sessions
+      .getRecoveringCorruption(caseId)
+      .then(async (result) => {
         if (!active) return;
-        load(saved ?? createSession(caseId));
-        setStatus('ready');
+        const definition = getCaseById(caseId);
+        if (definition === null) {
+          setStatus('error');
+          return;
+        }
+        const restored =
+          result.session === null
+            ? createSession(caseId)
+            : reconcileActiveSession(result.session, definition);
+        if (result.session !== null) await repositories.sessions.save(restored);
+        if (!active) return;
+        load(restored);
+        setStatus(result.recoveredFromCorruption ? 'recovered' : 'ready');
       })
       .catch((caught: unknown) => {
         logger.warn('Active session restore failed', {
@@ -36,5 +50,6 @@ export function useActiveSession(caseId: string): SessionLoadStatus {
     };
   }, [caseId, load, session?.caseId]);
 
-  return session?.caseId === caseId ? 'ready' : status;
+  if (session?.caseId !== caseId) return status;
+  return status === 'recovered' ? 'recovered' : 'ready';
 }

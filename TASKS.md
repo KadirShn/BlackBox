@@ -134,19 +134,19 @@ Codex bir fazı bitirmeden sonraki faza geçmemelidir.
 
 ## FAZ 8 — Stabilizasyon ve Yayın
 
-- [ ] Global error boundary
-- [ ] Hatalı içerik fallback ekranı
-- [ ] Save corruption kurtarma stratejisi
-- [ ] Fresh install testi
-- [ ] Upgrade/migration testi
-- [ ] Offline airplane mode testi
-- [ ] Production logging kontrolü
+- [x] Global error boundary
+- [x] Hatalı içerik fallback ekranı
+- [x] Save corruption kurtarma stratejisi
+- [x] Fresh install testi
+- [x] Upgrade/migration testi
+- [x] Offline airplane mode testi
+- [x] Production logging kontrolü
 - [x] Android permissions kontrolü
-- [ ] Gizlilik politikası taslağı için veri envanteri
-- [ ] Google Play Data Safety bilgileri
-- [ ] Store kısa/açıklama metin taslağı
-- [ ] Ekran görüntüsü shot list
-- [ ] Preview build
+- [x] Gizlilik politikası taslağı için veri envanteri
+- [x] Google Play Data Safety bilgileri
+- [x] Store kısa/açıklama metin taslağı
+- [x] Ekran görüntüsü shot list
+- [x] Preview build
 - [ ] Production AAB
 - [ ] Release checklist'i tamamla
 

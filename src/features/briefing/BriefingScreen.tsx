@@ -8,6 +8,7 @@ import { ScreenFrame } from '@/components/ScreenFrame';
 import { ErrorState } from '@/components/StateViews';
 import { getCaseById } from '@/content/cases/catalog';
 import { translateCase } from '@/content/locales/caseTranslations';
+import { translate } from '@/content/locales/translations';
 import { getRepositories } from '@/data/database/initializeDatabase';
 import { logger } from '@/services/logger/logger';
 import { useSettingsStore } from '@/stores/useSettingsStore';
@@ -25,10 +26,10 @@ export function BriefingScreen({ caseId }: { caseId: string }) {
   if (definition === null) {
     return (
       <ErrorState
-        message="Vaka tanımı bulunamadı."
+        message={translate('briefing.missing', language)}
         onRetry={() => router.back()}
-        retryLabel="Geri dön"
-        title="Dosya açılamadı"
+        retryLabel={translate('common.back', language)}
+        title={translate('briefing.openError', language)}
       />
     );
   }
@@ -38,7 +39,8 @@ export function BriefingScreen({ caseId }: { caseId: string }) {
     setError(false);
     try {
       const repositories = getRepositories();
-      const existingSession = await repositories.sessions.get(caseId);
+      const recovery = await repositories.sessions.getRecoveringCorruption(caseId);
+      const existingSession = recovery.session;
       const session = existingSession ?? createSession(caseId);
       await repositories.sessions.save(session);
       const progress = await repositories.progress.get(caseId);
@@ -65,7 +67,10 @@ export function BriefingScreen({ caseId }: { caseId: string }) {
 
   return (
     <ScreenFrame>
-      <Text style={styles.eyebrow}>BRIEF / {definition.estimatedMinutes} DK</Text>
+      <Text style={styles.eyebrow}>
+        {translate('briefing.eyebrow', language)} / {definition.estimatedMinutes}{' '}
+        {translate('case.minutes', language).toUpperCase()}
+      </Text>
       <Text accessibilityRole="header" style={styles.title}>
         {translateCase(definition.titleKey, language)}
       </Text>
@@ -74,18 +79,18 @@ export function BriefingScreen({ caseId }: { caseId: string }) {
         <Text style={styles.messageText}>{translateCase(definition.briefingKey, language)}</Text>
       </View>
       <View style={styles.objectives}>
-        <Text style={styles.section}>Görev hedefleri</Text>
-        <Text style={styles.objective}>01 · Dijital delilleri incele</Text>
-        <Text style={styles.objective}>02 · Zaman çizelgesini çöz</Text>
-        <Text style={styles.objective}>03 · Hipotezini kanıtlarla raporla</Text>
+        <Text style={styles.section}>{translate('briefing.objectives', language)}</Text>
+        <Text style={styles.objective}>{translate('briefing.objectiveEvidence', language)}</Text>
+        <Text style={styles.objective}>{translate('briefing.objectiveTimeline', language)}</Text>
+        <Text style={styles.objective}>{translate('briefing.objectiveReport', language)}</Text>
       </View>
       {error ? (
         <Text accessibilityLiveRegion="assertive" style={styles.error}>
-          Vaka başlatılamadı. Yerel kayda erişimi kontrol edip tekrar dene.
+          {translate('briefing.startError', language)}
         </Text>
       ) : null}
       <PrimaryButton
-        label="İncelemeyi başlat"
+        label={translate('briefing.start', language)}
         loading={starting}
         onPress={() => void startCase()}
       />

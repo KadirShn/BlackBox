@@ -15,25 +15,44 @@ export type Repositories = {
 };
 
 let repositories: Repositories | null = null;
+let initialization: Promise<Repositories> | null = null;
 
 export async function initializeDatabase(): Promise<Repositories> {
   if (repositories !== null) return repositories;
-  const sqlite = await openDatabaseAsync('black-box.db');
-  const database = new ExpoSqlDatabase(sqlite);
+  if (initialization !== null) return initialization;
+
+  initialization = openDatabaseAsync('black-box.db').then(async (sqlite) => {
+    const database = new ExpoSqlDatabase(sqlite);
+    return prepareDatabase(database);
+  });
+
+  try {
+    repositories = await initialization;
+    return repositories;
+  } catch (error: unknown) {
+    initialization = null;
+    throw error;
+  }
+}
+
+export async function prepareDatabase(
+  database: SqlDatabase,
+  currentTime: () => string = () => new Date().toISOString(),
+): Promise<Repositories> {
   await runMigrations(database);
-  repositories = createRepositories(database);
-  if ((await repositories.progress.get('tutorial-missing-eleven')) === null) {
-    await repositories.progress.save({
+  const preparedRepositories = createRepositories(database);
+  if ((await preparedRepositories.progress.get('tutorial-missing-eleven')) === null) {
+    await preparedRepositories.progress.save({
       caseId: 'tutorial-missing-eleven',
       status: 'available',
       bestStars: 0,
       attempts: 0,
       hintsUsedBest: null,
       completedAt: null,
-      updatedAt: new Date().toISOString(),
+      updatedAt: currentTime(),
     });
   }
-  return repositories;
+  return preparedRepositories;
 }
 
 export function createRepositories(database: SqlDatabase): Repositories {

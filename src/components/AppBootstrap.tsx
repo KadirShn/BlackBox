@@ -4,6 +4,7 @@ import { View } from 'react-native';
 
 import { ErrorState, LoadingState } from '@/components/StateViews';
 import { SessionAutosave } from '@/components/SessionAutosave';
+import { translate } from '@/content/locales/translations';
 import { initializeDatabase } from '@/data/database/initializeDatabase';
 import type { PersistedSettings } from '@/domain/settings/settings';
 import { logger } from '@/services/logger/logger';
@@ -27,6 +28,7 @@ function selectPersistedSettings(): PersistedSettings {
 export function AppBootstrap({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<BootstrapStatus>('loading');
   const [attempt, setAttempt] = useState(0);
+  const language = useSettingsStore((state) => state.language);
 
   useEffect(() => {
     let active = true;
@@ -34,8 +36,14 @@ export function AppBootstrap({ children }: { children: ReactNode }) {
 
     void initializeDatabase()
       .then(async (repositories) => {
-        const savedSettings = await repositories.settings.get();
+        const recovery = await repositories.settings.getRecoveringCorruption();
+        const savedSettings = recovery.settings;
         if (!active) return;
+        if (recovery.recoveredFromCorruption) {
+          logger.warn('Invalid settings were reset without changing progress', {
+            reason: 'validation',
+          });
+        }
         if (savedSettings !== null) useSettingsStore.getState().hydrate(savedSettings);
 
         let saveQueue = Promise.resolve();
@@ -69,7 +77,7 @@ export function AppBootstrap({ children }: { children: ReactNode }) {
       <View
         style={{ flex: 1, justifyContent: 'center', backgroundColor: colors.background.primary }}
       >
-        <LoadingState label="Yerel arşiv hazırlanıyor" />
+        <LoadingState label={translate('bootstrap.loading', language)} />
       </View>
     );
   }
@@ -80,13 +88,13 @@ export function AppBootstrap({ children }: { children: ReactNode }) {
         style={{ flex: 1, justifyContent: 'center', backgroundColor: colors.background.primary }}
       >
         <ErrorState
-          message="Yerel kayıt alanı açılamadı. İlerlemeniz silinmedi."
+          message={translate('bootstrap.errorMessage', language)}
           onRetry={() => {
             setStatus('loading');
             setAttempt((value) => value + 1);
           }}
-          retryLabel="Tekrar dene"
-          title="Arşiv kullanılamıyor"
+          retryLabel={translate('common.retry', language)}
+          title={translate('bootstrap.errorTitle', language)}
         />
       </View>
     );

@@ -1,8 +1,9 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText as Text } from '@/components/AppText';
-
 import { StatusBadge, type CaseStatus } from '@/components/StatusBadge';
+import { translate } from '@/content/locales/translations';
+import { useSettingsStore } from '@/stores/useSettingsStore';
 import { colors, layout, radii, spacing, typography } from '@/theme/tokens';
 
 type CaseCardProps = {
@@ -29,6 +30,7 @@ export function CaseCard({
   onPress,
 }: CaseCardProps) {
   const locked = status === 'locked';
+  const language = useSettingsStore((state) => state.language);
 
   return (
     <Pressable
@@ -49,9 +51,12 @@ export function CaseCard({
       <Text style={styles.summary}>{summary}</Text>
       <View style={styles.meta}>
         <Text style={styles.metaText}>
-          {difficulty} · {estimatedMinutes} dk
+          {difficulty} · {estimatedMinutes} {translate('case.minutes', language)}
         </Text>
-        <Text accessibilityLabel={`${stars} yıldız`} style={styles.stars}>
+        <Text
+          accessibilityLabel={`${stars} ${translate('case.stars', language)}`}
+          style={styles.stars}
+        >
           {'★'.repeat(stars)}
           {'☆'.repeat(3 - stars)}
         </Text>

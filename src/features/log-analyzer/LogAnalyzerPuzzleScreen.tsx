@@ -10,6 +10,7 @@ import { ScreenFrame } from '@/components/ScreenFrame';
 import { ErrorState, LoadingState } from '@/components/StateViews';
 import { getCaseById } from '@/content/cases/catalog';
 import { translateCase } from '@/content/locales/caseTranslations';
+import { translate } from '@/content/locales/translations';
 import { evaluatePuzzle, restorePuzzleAnswer } from '@/engine/puzzle-runtime/puzzleRegistry';
 import { useActiveSession } from '@/features/session/useActiveSession';
 import { useFeedback } from '@/features/feedback/useFeedback';
@@ -47,14 +48,14 @@ export function LogAnalyzerPuzzleScreen({
   if (puzzle?.type !== 'log_analyzer')
     return (
       <ErrorState
-        message="Log puzzle tanımı bulunamadı."
+        message={translate('log.missing', language)}
         onRetry={() => router.back()}
-        retryLabel="Geri dön"
-        title="Puzzle açılamadı"
+        retryLabel={translate('common.back', language)}
+        title={translate('puzzle.openError', language)}
       />
     );
   if (status === 'loading' || session?.caseId !== caseId)
-    return <LoadingState label="Log kayıtları yükleniyor" />;
+    return <LoadingState label={translate('log.loading', language)} />;
   const logPuzzle = puzzle;
   const visibleRows =
     filter === 'all' ? puzzle.rows : puzzle.rows.filter((row) => row.level === filter);
@@ -113,17 +114,17 @@ export function LogAnalyzerPuzzleScreen({
         })}
       </View>
       <PrimaryButton
-        label="İpucu"
+        label={translate('puzzle.hint', language)}
         onPress={() =>
           router.push({ pathname: '/cases/[caseId]/hint', params: { caseId, puzzleId } })
         }
       />
-      <PrimaryButton label="Seçimi kontrol et" onPress={submit} />
+      <PrimaryButton label={translate('log.check', language)} onPress={submit} />
       {feedback === 'wrong' ? (
-        <Text style={styles.error}>Seçimde eksik veya gereksiz satırlar var.</Text>
+        <Text style={styles.error}>{translate('log.wrong', language)}</Text>
       ) : null}
       {feedback === 'solved' ? (
-        <Text style={styles.success}>✓ Anormal kayıtlar doğrulandı.</Text>
+        <Text style={styles.success}>{translate('log.solved', language)}</Text>
       ) : null}
     </ScreenFrame>
   );

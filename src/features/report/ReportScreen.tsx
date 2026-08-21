@@ -9,6 +9,7 @@ import { ScreenFrame } from '@/components/ScreenFrame';
 import { ErrorState, LoadingState } from '@/components/StateViews';
 import { getCaseById, getNextCaseId } from '@/content/cases/catalog';
 import { translateCase } from '@/content/locales/caseTranslations';
+import { translate } from '@/content/locales/translations';
 import { getRepositories } from '@/data/database/initializeDatabase';
 import { evaluateReport } from '@/engine/scoring/scoringEngine';
 import { evaluateAchievements } from '@/engine/achievements/evaluateAchievements';
@@ -37,21 +38,21 @@ export function ReportScreen({ caseId }: { caseId: string }) {
   if (definition === null)
     return (
       <ErrorState
-        message="Rapor şablonu bulunamadı."
+        message={translate('report.missing', language)}
         onRetry={() => router.back()}
-        retryLabel="Geri dön"
-        title="Rapor açılamadı"
+        retryLabel={translate('common.back', language)}
+        title={translate('report.openError', language)}
       />
     );
   if (status === 'loading' || session?.caseId !== caseId)
-    return <LoadingState label="Rapor hazırlanıyor" />;
+    return <LoadingState label={translate('report.loading', language)} />;
   if (status === 'error')
     return (
       <ErrorState
-        message="Oturum okunamadı."
+        message={translate('report.sessionMissing', language)}
         onRetry={() => router.back()}
-        retryLabel="Geri dön"
-        title="Kayıt hatası"
+        retryLabel={translate('common.back', language)}
+        title={translate('common.loadError', language)}
       />
     );
 
@@ -60,7 +61,7 @@ export function ReportScreen({ caseId }: { caseId: string }) {
 
   async function submit(): Promise<void> {
     if (activeSession.selectedHypothesisId === null) {
-      setFeedback('Önce bir hipotez seçmelisin.');
+      setFeedback(translate('report.selectHypothesis', language));
       return;
     }
     const solvedPuzzleIds = new Set(
@@ -75,7 +76,7 @@ export function ReportScreen({ caseId }: { caseId: string }) {
       hintsUsed: activeSession.hintsUsed,
     });
     if (!evaluation.correct) {
-      setFeedback('Rapor kanıtlarla uyuşmuyor. Hipotezi ve destek delillerini yeniden kontrol et.');
+      setFeedback(translate('report.incorrect', language));
       void playFeedbackHaptic(hapticsEnabled, 'warning');
       void playUiSound('warning', soundEffectsEnabled);
       return;
@@ -122,7 +123,7 @@ export function ReportScreen({ caseId }: { caseId: string }) {
       logger.warn('Report submission persistence failed', {
         reason: caught instanceof Error ? caught.name : 'unknown',
       });
-      setFeedback('Rapor yerel arşive kaydedilemedi. İlerlemen korunuyor; tekrar dene.');
+      setFeedback(translate('report.saveError', language));
     } finally {
       setSubmitting(false);
     }
@@ -131,9 +132,9 @@ export function ReportScreen({ caseId }: { caseId: string }) {
   return (
     <ScreenFrame>
       <Text accessibilityRole="header" style={styles.title}>
-        Nihai Rapor
+        {translate('report.title', language)}
       </Text>
-      <Text style={styles.sectionTitle}>1 · Hipotez</Text>
+      <Text style={styles.sectionTitle}>{translate('report.hypothesis', language)}</Text>
       {definition.hypotheses.map((hypothesis) => {
         const selected = session.selectedHypothesisId === hypothesis.id;
         return (
@@ -153,7 +154,7 @@ export function ReportScreen({ caseId }: { caseId: string }) {
           </Pressable>
         );
       })}
-      <Text style={styles.sectionTitle}>2 · Destek delilleri</Text>
+      <Text style={styles.sectionTitle}>{translate('report.evidence', language)}</Text>
       <View style={styles.evidenceList}>
         {definition.evidence
           .filter((evidence) => session.openedEvidenceIds.includes(evidence.id))
@@ -165,7 +166,7 @@ export function ReportScreen({ caseId }: { caseId: string }) {
               opened
               selected={session.selectedEvidenceIds.includes(evidence.id)}
               title={translateCase(evidence.titleKey, language)}
-              typeLabel="Delil"
+              typeLabel={translate('report.evidenceType', language)}
             />
           ))}
       </View>
@@ -174,7 +175,11 @@ export function ReportScreen({ caseId }: { caseId: string }) {
           {feedback}
         </Text>
       ) : null}
-      <PrimaryButton label="Raporu gönder" loading={submitting} onPress={() => void submit()} />
+      <PrimaryButton
+        label={translate('report.submit', language)}
+        loading={submitting}
+        onPress={() => void submit()}
+      />
     </ScreenFrame>
   );
 }

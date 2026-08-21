@@ -1,9 +1,19 @@
 import type { SqlDatabase } from '@/data/database/sqlDatabase';
-import { parseStoredJson } from '@/data/database/dataErrors';
+import { DataValidationError, parseStoredJson } from '@/data/database/dataErrors';
 import { activeSessionSchema, type ActiveSession } from '@/domain/session/activeSession';
-import { z } from 'zod';
+import { z, ZodError } from 'zod';
 
 const sessionRowSchema = z.object({ payload_json: z.string() });
+
+export type SessionRecoveryResult = {
+  session: ActiveSession | null;
+  recoveredFromCorruption: boolean;
+};
+
+function parseSessionRow(raw: unknown, caseId: string): ActiveSession {
+  const row = sessionRowSchema.parse(raw);
+  return activeSessionSchema.parse(parseStoredJson(row.payload_json, `session:${caseId}`));
+}
 
 export class ActiveSessionRepository {
   public constructor(private readonly database: SqlDatabase) {}
@@ -14,8 +24,23 @@ export class ActiveSessionRepository {
       [caseId],
     );
     if (raw === null) return null;
-    const row = sessionRowSchema.parse(raw);
-    return activeSessionSchema.parse(parseStoredJson(row.payload_json, `session:${caseId}`));
+    return parseSessionRow(raw, caseId);
+  }
+
+  public async getRecoveringCorruption(caseId: string): Promise<SessionRecoveryResult> {
+    const raw = await this.database.getFirstAsync(
+      'SELECT payload_json FROM active_sessions WHERE case_id = ?',
+      [caseId],
+    );
+    if (raw === null) return { session: null, recoveredFromCorruption: false };
+
+    try {
+      return { session: parseSessionRow(raw, caseId), recoveredFromCorruption: false };
+    } catch (error: unknown) {
+      if (!(error instanceof DataValidationError) && !(error instanceof ZodError)) throw error;
+      await this.delete(caseId);
+      return { session: null, recoveredFromCorruption: true };
+    }
   }
 
   public async save(session: ActiveSession): Promise<void> {

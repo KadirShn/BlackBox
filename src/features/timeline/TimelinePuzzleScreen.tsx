@@ -8,6 +8,7 @@ import { ScreenFrame } from '@/components/ScreenFrame';
 import { ErrorState, LoadingState } from '@/components/StateViews';
 import { getCaseById } from '@/content/cases/catalog';
 import { translateCase } from '@/content/locales/caseTranslations';
+import { translate } from '@/content/locales/translations';
 import type { CaseDefinition, TimelinePuzzleDefinition } from '@/domain/case/caseSchema';
 import { evaluateTimeline, restoreTimelineAnswer } from '@/engine/puzzle-runtime/timelineEvaluator';
 import { useActiveSession } from '@/features/session/useActiveSession';
@@ -78,7 +79,7 @@ function TimelinePuzzleContent({
       </Text>
       <Text style={styles.instructions}>{translateCase(puzzle.instructionsKey, language)}</Text>
       <PrimaryButton
-        label="İpucu"
+        label={translate('puzzle.hint', language)}
         onPress={() =>
           router.push({ pathname: '/cases/[caseId]/hint', params: { caseId, puzzleId: puzzle.id } })
         }
@@ -87,20 +88,20 @@ function TimelinePuzzleContent({
         items={items}
         onMove={move}
         onSubmit={submit}
-        submitLabel="Sırayı kontrol et"
+        submitLabel={translate('timeline.check', language)}
       />
       {feedback === 'wrong' ? (
         <Text accessibilityLiveRegion="assertive" style={styles.error}>
-          Sıra henüz tutarlı değil. Saatleri ve bakım olayını yeniden karşılaştır.
+          {translate('timeline.wrong', language)}
         </Text>
       ) : null}
       {feedback === 'solved' ? (
         <>
           <Text accessibilityLiveRegion="polite" style={styles.success}>
-            ✓ Zaman çizelgesi doğrulandı.
+            {translate('timeline.solved', language)}
           </Text>
           <PrimaryButton
-            label="Delil masasına dön"
+            label={translate('puzzle.returnDesk', language)}
             onPress={() => router.replace({ pathname: '/cases/[caseId]/desk', params: { caseId } })}
           />
         </>
@@ -113,27 +114,28 @@ export function TimelinePuzzleScreen({ caseId, puzzleId }: { caseId: string; puz
   const router = useRouter();
   const loadStatus = useActiveSession(caseId);
   const session = useSessionStore((state) => state.session);
+  const language = useSettingsStore((state) => state.language);
   const definition = getCaseById(caseId);
   const puzzle = definition?.puzzles.find((item) => item.id === puzzleId);
 
   if (definition === null || puzzle?.type !== 'timeline')
     return (
       <ErrorState
-        message="Timeline tanımı bulunamadı."
+        message={translate('timeline.missing', language)}
         onRetry={() => router.back()}
-        retryLabel="Geri dön"
-        title="Puzzle açılamadı"
+        retryLabel={translate('common.back', language)}
+        title={translate('puzzle.openError', language)}
       />
     );
   if (loadStatus === 'loading' || session?.caseId !== caseId)
-    return <LoadingState label="Puzzle yükleniyor" />;
+    return <LoadingState label={translate('timeline.loading', language)} />;
   if (loadStatus === 'error')
     return (
       <ErrorState
-        message="Oturum yüklenemedi."
+        message={translate('puzzle.sessionMissing', language)}
         onRetry={() => router.back()}
-        retryLabel="Geri dön"
-        title="Kayıt hatası"
+        retryLabel={translate('common.back', language)}
+        title={translate('common.loadError', language)}
       />
     );
 

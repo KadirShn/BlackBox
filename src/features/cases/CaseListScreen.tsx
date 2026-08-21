@@ -5,7 +5,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { AppText as Text } from '@/components/AppText';
 import { CaseCard } from '@/components/CaseCard';
 import { EmptyState, ErrorState, LoadingState } from '@/components/StateViews';
-import { caseCatalog } from '@/content/cases/catalog';
+import { caseCatalog, caseCatalogIssues } from '@/content/cases/catalog';
 import { translateCase } from '@/content/locales/caseTranslations';
 import { translate } from '@/content/locales/translations';
 import { getRepositories } from '@/data/database/initializeDatabase';
@@ -28,7 +28,7 @@ async function readProgress(): Promise<LoadState> {
     };
   } catch (error: unknown) {
     logger.warn('Case list load failed', {
-      cause: error instanceof Error ? error.message : 'Unknown error',
+      reason: error instanceof Error ? error.name : 'unknown',
     });
     return { status: 'error' };
   }
@@ -48,6 +48,17 @@ export function CaseListScreen() {
       active = false;
     };
   }, []);
+
+  if (caseCatalogIssues.length > 0) {
+    return (
+      <ErrorState
+        message={translate('content.error.message', language)}
+        onRetry={() => router.replace('/')}
+        retryLabel={translate('content.error.action', language)}
+        title={translate('content.error.title', language)}
+      />
+    );
+  }
 
   if (loadState.status === 'loading') {
     return <LoadingState label={translate('common.loading', language)} />;
@@ -108,7 +119,7 @@ export function CaseListScreen() {
             difficulty={translate(difficultyKey, language)}
             estimatedMinutes={definition.estimatedMinutes}
             key={definition.id}
-            numberLabel={`DOSYA / ${String(index).padStart(2, '0')}`}
+            numberLabel={`${translate('case.file', language)} / ${String(index).padStart(2, '0')}`}
             onPress={() =>
               router.push({ pathname: '/cases/[caseId]', params: { caseId: definition.id } })
             }

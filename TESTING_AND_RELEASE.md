@@ -92,23 +92,23 @@ Bozuk aktif session tüm ilerlemeyi silmemelidir. Yalnızca ilgili oturum güven
 
 ### Uygulama
 
-- [ ] Debug menüler production'da kapalı
-- [ ] Placeholder metin yok
-- [ ] Eksik çeviri yok
-- [ ] Tüm vakalar tamamlanabilir
-- [ ] Gizli test butonları yok
-- [ ] Hata logları kişisel veri içermiyor
-- [ ] Reklam SDK'sı yok
-- [ ] Kullanılmayan izin yok
+- [x] Debug menüler production'da kapalı
+- [x] Placeholder metin yok
+- [x] Eksik çeviri yok
+- [x] Tüm vakalar tamamlanabilir
+- [x] Gizli test butonları yok
+- [x] Hata logları kişisel veri içermiyor
+- [x] Reklam SDK'sı yok
+- [x] Kullanılmayan izin yok
 
 ### Android
 
-- [ ] Kalıcı package name
+- [x] Kalıcı package name
 - [ ] Version name/code doğru
-- [ ] Adaptive icon
-- [ ] Splash screen
-- [ ] Edge-to-edge kontrolü
-- [ ] Back button davranışı
+- [x] Adaptive icon
+- [x] Splash screen
+- [x] Edge-to-edge kontrolü
+- [x] Back button davranışı
 - [ ] AAB başarıyla kurulup açılıyor
 
 ### Store
@@ -116,9 +116,9 @@ Bozuk aktif session tüm ilerlemeyi silmemelidir. Yalnızca ilgili oturum güven
 - [ ] Oyun kategorisi doğru
 - [ ] İçerik derecelendirme doğru
 - [ ] Gizlilik politikası doğru
-- [ ] Data Safety gerçek davranışla uyumlu
+- [x] Data Safety gerçek davranışla uyumlu
 - [ ] Ekran görüntüleri gerçek uygulamadan
-- [ ] Açıklama vaat edilmeyen özellik içermiyor
+- [x] Açıklama vaat edilmeyen özellik içermiyor
 - [ ] Destek e-postası erişilebilir
 
 ## 7. Gizlilik Veri Envanteri

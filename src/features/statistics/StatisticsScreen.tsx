@@ -30,7 +30,7 @@ async function readStatistics(): Promise<LoadState> {
     };
   } catch (error: unknown) {
     logger.warn('Statistics load failed', {
-      cause: error instanceof Error ? error.message : 'Unknown error',
+      reason: error instanceof Error ? error.name : 'unknown',
     });
     return { status: 'error' };
   }

@@ -10,6 +10,7 @@ import { ScreenFrame } from '@/components/ScreenFrame';
 import { ErrorState, LoadingState } from '@/components/StateViews';
 import { getCaseById } from '@/content/cases/catalog';
 import { translateCase } from '@/content/locales/caseTranslations';
+import { translate } from '@/content/locales/translations';
 import { evaluatePuzzle, restorePuzzleAnswer } from '@/engine/puzzle-runtime/puzzleRegistry';
 import { useActiveSession } from '@/features/session/useActiveSession';
 import { useFeedback } from '@/features/feedback/useFeedback';
@@ -45,14 +46,14 @@ export function ContradictionPuzzleScreen({
   if (puzzle?.type !== 'contradiction')
     return (
       <ErrorState
-        message="Çelişki puzzle tanımı bulunamadı."
+        message={translate('contradiction.missing', language)}
         onRetry={() => router.back()}
-        retryLabel="Geri dön"
-        title="Puzzle açılamadı"
+        retryLabel={translate('common.back', language)}
+        title={translate('puzzle.openError', language)}
       />
     );
   if (status === 'loading' || session?.caseId !== caseId)
-    return <LoadingState label="İfadeler yükleniyor" />;
+    return <LoadingState label={translate('contradiction.loading', language)} />;
   const contradictionPuzzle = puzzle;
 
   function submit(): void {
@@ -94,20 +95,22 @@ export function ContradictionPuzzleScreen({
         </View>
       ))}
       <PrimaryButton
-        label="İpucu"
+        label={translate('puzzle.hint', language)}
         onPress={() =>
           router.push({ pathname: '/cases/[caseId]/hint', params: { caseId, puzzleId } })
         }
       />
       <PrimaryButton
         disabled={aSegmentId === '' || bSegmentId === ''}
-        label="Çelişkiyi kontrol et"
+        label={translate('contradiction.check', language)}
         onPress={submit}
       />
       {feedback === 'wrong' ? (
-        <Text style={styles.error}>Bu iki bölüm doğrudan çelişmiyor.</Text>
+        <Text style={styles.error}>{translate('contradiction.wrong', language)}</Text>
       ) : null}
-      {feedback === 'solved' ? <Text style={styles.success}>✓ Çelişki doğrulandı.</Text> : null}
+      {feedback === 'solved' ? (
+        <Text style={styles.success}>{translate('contradiction.solved', language)}</Text>
+      ) : null}
     </ScreenFrame>
   );
 }

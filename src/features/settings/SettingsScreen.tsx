@@ -1,6 +1,8 @@
 import { Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
+import { useRouter } from 'expo-router';
 
 import { AppText as Text } from '@/components/AppText';
+import { PrimaryButton } from '@/components/PrimaryButton';
 import { translate, type Language } from '@/content/locales/translations';
 import { type TextSize, useSettingsStore } from '@/stores/useSettingsStore';
 import { colors, layout, radii, spacing, typography } from '@/theme/tokens';
@@ -36,6 +38,7 @@ function ChoiceRow<T extends string>({
 }
 
 export function SettingsScreen() {
+  const router = useRouter();
   const settings = useSettingsStore();
   const t = (key: Parameters<typeof translate>[0]) => translate(key, settings.language);
   const languages: readonly { label: string; value: Language }[] = [
@@ -91,6 +94,13 @@ export function SettingsScreen() {
           accessibilityLabel={t('settings.soundEffects')}
           onValueChange={settings.setSoundEffectsEnabled}
           value={settings.soundEffectsEnabled}
+        />
+      </View>
+      <View style={styles.section}>
+        <PrimaryButton
+          label={t('settings.privacy')}
+          onPress={() => router.push('/privacy')}
+          variant="secondary"
         />
       </View>
     </ScrollView>

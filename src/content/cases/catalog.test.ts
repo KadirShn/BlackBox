@@ -1,4 +1,4 @@
-import { caseCatalog, getNextCaseId } from '@/content/cases/catalog';
+import { caseCatalog, getNextCaseId, parseCaseCatalog } from '@/content/cases/catalog';
 
 describe('case progression catalog', () => {
   it('unlocks Case 1 after the tutorial', () => {
@@ -18,5 +18,12 @@ describe('case progression catalog', () => {
       'case-black-box',
     ]);
     expect(getNextCaseId('case-black-box')).toBeNull();
+  });
+
+  it('isolates invalid external content instead of throwing during import', () => {
+    const result = parseCaseCatalog([caseCatalog[0], { id: 'broken-case' }]);
+
+    expect(result.cases).toHaveLength(1);
+    expect(result.issues).toEqual([{ index: 1 }]);
   });
 });

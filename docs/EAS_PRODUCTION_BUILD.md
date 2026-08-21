@@ -7,11 +7,8 @@ Gerçek hata `npm ci --include=dev` tarafından bildirilen `package.json` / `pac
 uyumsuzluğuydu. Kilit dosyası `npm install --package-lock-only --include=dev` ile yenilendi ve
 aynı komutun dry-run doğrulaması geçti.
 
-Npm 11'in Windows'ta ürettiği lockfile, Linux npm'in doğruladığı bazı peer/optional dependency
-kayıtlarını yine de yazmıyor. İzole bir Windows klasöründe lock üretimi aynı sonucu verdi. Bu
-nedenle production profilinde `EAS_NO_FROZEN_LOCKFILE=1` kullanılır; EAS `npm ci` yerine `npm
-install` çalıştırır ve committed lockfile'ı çözüm temeli olarak kullanırken eksik Linux kayıtlarını
-build ortamında tamamlar.
+Lockfile `package.json` ile eşitlenmiştir. EAS bağımlılık aşamasında tekrar üretilebilir kurulum
+için `npm ci --include=dev` çalıştırabilir.
 
 Expo Doctor 20/20 ve Expo dependency check temizdir.
 
@@ -22,9 +19,8 @@ Expo Doctor 20/20 ve Expo dependency check temizdir.
 - Version code: production build sırasında otomatik artar
 - Credentials: EAS remote keystore
 
-Tekrar build almadan önce `app.json` içindeki
-`com.example.blackboxincidentinvestigator` application ID'sini kalıcı kimlikle değiştirin. İlk
-Google Play yüklemesinden sonra application ID değiştirilemez.
+Kalıcı Android application ID `com.kadirshn.blackbox` olarak ayarlanmıştır. Daha önce farklı paket
+kimliğiyle üretilmiş APK/AAB dosyalarını Google Play'e yüklemeyin.
 
 Ardından:
 

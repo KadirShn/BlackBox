@@ -34,7 +34,7 @@ Bu paket, Expo ve TypeScript ile Android öncelikli, reklamsız bir puzzle + hik
 
 - Node.js: Expo SDK 57'nin desteklediği Node 22.13 veya daha yeni LTS.
 - Paket yöneticisi: npm; `package-lock.json` bağlayıcı kilit dosyasıdır.
-- Android application ID geçici olarak `com.example.blackboxincidentinvestigator` değeridir. İlk yayın yapılandırmasından önce size ait kalıcı ve benzersiz bir kimlikle değiştirilmelidir.
+- Kalıcı Android application ID: `com.kadirshn.blackbox`.
 
 Kurulum ve çalıştırma:
 

@@ -7,6 +7,7 @@ import { ScreenFrame } from '@/components/ScreenFrame';
 import { ErrorState } from '@/components/StateViews';
 import { getCaseById, getNextCaseId } from '@/content/cases/catalog';
 import { translateCase } from '@/content/locales/caseTranslations';
+import { translate } from '@/content/locales/translations';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { colors, radii, spacing, typography } from '@/theme/tokens';
 
@@ -17,18 +18,21 @@ export function ResultScreen({ caseId, stars }: { caseId: string; stars: 1 | 2 |
   if (definition === null)
     return (
       <ErrorState
-        message="Sonuç verisi bulunamadı."
+        message={translate('result.missing', language)}
         onRetry={() => router.replace('/cases')}
-        retryLabel="Vakalara dön"
-        title="Sonuç açılamadı"
+        retryLabel={translate('result.returnCases', language)}
+        title={translate('result.openError', language)}
       />
     );
   const nextCaseId = getNextCaseId(caseId);
 
   return (
     <ScreenFrame>
-      <Text style={styles.eyebrow}>DOSYA KAPANDI</Text>
-      <Text accessibilityLabel={`${stars} yıldız`} style={styles.stars}>
+      <Text style={styles.eyebrow}>{translate('result.closed', language)}</Text>
+      <Text
+        accessibilityLabel={`${stars} ${translate('case.stars', language)}`}
+        style={styles.stars}
+      >
         {'★'.repeat(stars)}
         {'☆'.repeat(3 - stars)}
       </Text>
@@ -41,11 +45,14 @@ export function ResultScreen({ caseId, stars }: { caseId: string; stars: 1 | 2 |
         </Text>
       </View>
       <PrimaryButton
-        label="Tekrar oyna"
+        label={translate('result.replay', language)}
         onPress={() => router.replace({ pathname: '/cases/[caseId]', params: { caseId } })}
       />
       {nextCaseId !== null ? (
-        <PrimaryButton label="Sonraki vakaya geç" onPress={() => router.replace('/cases')} />
+        <PrimaryButton
+          label={translate('result.next', language)}
+          onPress={() => router.replace('/cases')}
+        />
       ) : null}
     </ScreenFrame>
   );

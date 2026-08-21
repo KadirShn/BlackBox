@@ -10,6 +10,7 @@ import { ScreenFrame } from '@/components/ScreenFrame';
 import { ErrorState, LoadingState } from '@/components/StateViews';
 import { getCaseById } from '@/content/cases/catalog';
 import { translateCase } from '@/content/locales/caseTranslations';
+import { translate, type TranslationKey } from '@/content/locales/translations';
 import type { Connection, ConnectionType } from '@/domain/case/caseSchema';
 import { evaluatePuzzle, restorePuzzleAnswer } from '@/engine/puzzle-runtime/puzzleRegistry';
 import { useActiveSession } from '@/features/session/useActiveSession';
@@ -18,10 +19,10 @@ import { useSessionStore } from '@/stores/useSessionStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { colors, layout, radii, spacing, typography } from '@/theme/tokens';
 
-const connectionLabels: Record<ConnectionType, string> = {
-  supports: 'destekler',
-  contradicts: 'çelişir',
-  causes: 'neden olur',
+const connectionLabelKeys: Record<ConnectionType, TranslationKey> = {
+  supports: 'connection.supports',
+  contradicts: 'connection.contradicts',
+  causes: 'connection.causes',
 };
 
 export function ConnectionBoardPuzzleScreen({
@@ -63,14 +64,14 @@ export function ConnectionBoardPuzzleScreen({
   if (definition === null || puzzle?.type !== 'connection_board')
     return (
       <ErrorState
-        message="Bağlantı panosu tanımı bulunamadı."
+        message={translate('connection.missing', language)}
         onRetry={() => router.back()}
-        retryLabel="Geri dön"
-        title="Puzzle açılamadı"
+        retryLabel={translate('common.back', language)}
+        title={translate('puzzle.openError', language)}
       />
     );
   if (status === 'loading' || session?.caseId !== caseId)
-    return <LoadingState label="Bağlantı panosu yükleniyor" />;
+    return <LoadingState label={translate('connection.loading', language)} />;
   const boardPuzzle = puzzle;
   const nodeLabel = (nodeId: string) => {
     const evidence = definition.evidence.find((item) => item.id === nodeId);
@@ -107,7 +108,7 @@ export function ConnectionBoardPuzzleScreen({
         {translateCase(puzzle.titleKey, language)}
       </Text>
       <Text style={styles.instructions}>{translateCase(puzzle.instructionsKey, language)}</Text>
-      <Text style={styles.section}>1 · Kaynak düğüm</Text>
+      <Text style={styles.section}>{translate('connection.source', language)}</Text>
       <View style={styles.options}>
         {puzzle.nodeIds.map((id) => (
           <Pressable
@@ -121,7 +122,7 @@ export function ConnectionBoardPuzzleScreen({
           </Pressable>
         ))}
       </View>
-      <Text style={styles.section}>2 · Hedef düğüm</Text>
+      <Text style={styles.section}>{translate('connection.target', language)}</Text>
       <View style={styles.options}>
         {puzzle.nodeIds.map((id) => (
           <Pressable
@@ -135,7 +136,7 @@ export function ConnectionBoardPuzzleScreen({
           </Pressable>
         ))}
       </View>
-      <Text style={styles.section}>3 · İlişki tipi</Text>
+      <Text style={styles.section}>{translate('connection.type', language)}</Text>
       <View style={styles.options}>
         {puzzle.allowedConnectionTypes.map((item) => (
           <Pressable
@@ -145,19 +146,19 @@ export function ConnectionBoardPuzzleScreen({
             onPress={() => setType(item)}
             style={[styles.option, type === item && styles.selected]}
           >
-            <Text style={styles.optionText}>{connectionLabels[item]}</Text>
+            <Text style={styles.optionText}>{translate(connectionLabelKeys[item], language)}</Text>
           </Pressable>
         ))}
       </View>
       <PrimaryButton
         disabled={source === null || target === null || type === null || source === target}
-        label="Bağlantıyı ekle"
+        label={translate('connection.add', language)}
         onPress={addConnection}
       />
       <View style={styles.connectionList}>
         {connections.map((item) => (
           <Pressable
-            accessibilityHint="Bağlantıyı kaldır"
+            accessibilityHint={translate('connection.remove', language)}
             accessibilityRole="button"
             key={`${item.from}-${item.to}-${item.type}`}
             onPress={() =>
@@ -166,23 +167,24 @@ export function ConnectionBoardPuzzleScreen({
             style={styles.connection}
           >
             <Text style={styles.connectionText}>
-              {nodeLabel(item.from)} → {connectionLabels[item.type]} → {nodeLabel(item.to)} ×
+              {nodeLabel(item.from)} → {translate(connectionLabelKeys[item.type], language)} →{' '}
+              {nodeLabel(item.to)} ×
             </Text>
           </Pressable>
         ))}
       </View>
       <PrimaryButton
-        label="İpucu"
+        label={translate('puzzle.hint', language)}
         onPress={() =>
           router.push({ pathname: '/cases/[caseId]/hint', params: { caseId, puzzleId } })
         }
       />
-      <PrimaryButton label="Panoyu kontrol et" onPress={submit} />
+      <PrimaryButton label={translate('connection.check', language)} onPress={submit} />
       {feedback === 'wrong' ? (
-        <Text style={styles.error}>Bağlantılardan biri eksik veya yönü yanlış.</Text>
+        <Text style={styles.error}>{translate('connection.wrong', language)}</Text>
       ) : null}
       {feedback === 'solved' ? (
-        <Text style={styles.success}>✓ Bağlantı panosu doğrulandı.</Text>
+        <Text style={styles.success}>{translate('connection.solved', language)}</Text>
       ) : null}
     </ScreenFrame>
   );

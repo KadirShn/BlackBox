@@ -7,9 +7,20 @@ import { ScreenFrame } from '@/components/ScreenFrame';
 import { ErrorState } from '@/components/StateViews';
 import { getCaseById } from '@/content/cases/catalog';
 import { translateCase } from '@/content/locales/caseTranslations';
+import { translate, type TranslationKey } from '@/content/locales/translations';
+import type { CaseDefinition } from '@/domain/case/caseSchema';
 import { useSessionStore } from '@/stores/useSessionStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { colors, radii, spacing, typography } from '@/theme/tokens';
+
+const evidenceTypeKeys: Record<CaseDefinition['evidence'][number]['type'], TranslationKey> = {
+  message: 'evidence.type.message',
+  system_log: 'evidence.type.system_log',
+  sensor_record: 'evidence.type.sensor_record',
+  image: 'evidence.type.image',
+  statement: 'evidence.type.statement',
+  location_record: 'evidence.type.location_record',
+};
 
 export function EvidenceDetailScreen({
   caseId,
@@ -26,10 +37,10 @@ export function EvidenceDetailScreen({
   if (evidence === undefined)
     return (
       <ErrorState
-        message="Delil bulunamadı."
+        message={translate('evidence.missing', language)}
         onRetry={() => router.back()}
-        retryLabel="Geri dön"
-        title="Delil hatası"
+        retryLabel={translate('common.back', language)}
+        title={translate('evidence.errorTitle', language)}
       />
     );
   const marked = session?.markedFieldIds.includes(evidenceId) ?? false;
@@ -38,7 +49,9 @@ export function EvidenceDetailScreen({
 
   return (
     <ScreenFrame>
-      <Text style={styles.eyebrow}>{evidence.type.replace('_', ' ').toUpperCase()}</Text>
+      <Text style={styles.eyebrow}>
+        {translate(evidenceTypeKeys[evidence.type], language).toUpperCase()}
+      </Text>
       <Text accessibilityRole="header" style={styles.title}>
         {translateCase(evidence.titleKey, language)}
       </Text>
@@ -53,7 +66,9 @@ export function EvidenceDetailScreen({
         </Text>
       </View>
       <PrimaryButton
-        label={marked ? '✓ Önemli alan işaretli' : 'Önemli alanı işaretle'}
+        label={
+          marked ? translate('evidence.marked', language) : translate('evidence.mark', language)
+        }
         onPress={() => markField(evidenceId)}
       />
     </ScreenFrame>

@@ -28,7 +28,7 @@ async function readArchive(): Promise<LoadState> {
     };
   } catch (error: unknown) {
     logger.warn('Archive load failed', {
-      cause: error instanceof Error ? error.message : 'Unknown error',
+      reason: error instanceof Error ? error.name : 'unknown',
     });
     return { status: 'error' };
   }
@@ -90,7 +90,7 @@ export function ArchiveScreen() {
             difficulty={translate(`case.difficulty.${definition.difficulty}`, language)}
             estimatedMinutes={definition.estimatedMinutes}
             key={definition.id}
-            numberLabel="ARŞİV"
+            numberLabel={translate('archive.badge', language)}
             onPress={() =>
               router.push({ pathname: '/cases/[caseId]', params: { caseId: definition.id } })
             }

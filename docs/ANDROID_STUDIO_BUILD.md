@@ -44,23 +44,18 @@ adb install -r artifacts/builds/black-box-preview.apk
 - Debug APK açılırken Metro bağlantısı ister.
 - Fiziksel ARM cihazda geliştirme için `npx expo run:android` kullanın; komut bağlı cihazın
   mimarisini seçer.
-- Production AAB öncesinde `com.example.blackboxincidentinvestigator` kalıcı bir application ID
-  ile değiştirilmeli ve ayrı upload key oluşturulmalıdır.
+- Production AAB kalıcı `com.kadirshn.blackbox` application ID'sini kullanır. Upload key EAS'in
+  uzak Android credentials sistemi tarafından yönetilir.
 
 ## Son doğrulama
 
-8 Ağustos 2026 tarihinde üretilen debug APK:
+21 Ağustos 2026 tarihinde üretilen release preview APK:
 
-- Dosya: `artifacts/builds/black-box-debug.apk`
-- Paket: `com.example.blackboxincidentinvestigator`
+- Dosya: `artifacts/builds/black-box-preview.apk`
+- Paket: `com.kadirshn.blackbox`
 - Version name/code: `1.0.0` / `1`
 - Min/target/compile SDK: `24` / `36` / `36`
 - ABI: `x86_64`
-- SHA-256: `8FFCE6EDD84800A24547EF1939170373D6B4E1D563DC75939A4691DF06479E30`
-
-Expo Doctor 20/20, Expo paket uyumluluğu, TypeScript, ESLint, Prettier ve 41 Jest testi
-geçti. Android Gradle lint, uygulama bulgusu üretmeden `react-native-worklets` build scriptini
-analiz eden Android Lint/Kotlin UAST iç hatasında duruyor (`Cannot find a KaModule`). Bu upstream
-araç hatası AAB üretimini engellemez; yine de bağımlılık güncellemelerinde tekrar denenmelidir.
+- Release Gradle görevleri: `assembleRelease`, `lintVitalRelease` başarılı.
 
 Release birleşik manifestinde mikrofon, eski depolama ve `SYSTEM_ALERT_WINDOW` izinleri yoktur.

@@ -24,13 +24,13 @@ export function HomeScreen() {
       <SignalCore />
       <View style={styles.telemetry}>
         <View style={styles.telemetryItem}>
-          <Text style={styles.rankLabel}>CLEARANCE</Text>
+          <Text style={styles.rankLabel}>{translate('home.clearance', language)}</Text>
           <Text style={styles.rank}>{translate('home.rank', language)}</Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.telemetryItem}>
-          <Text style={styles.rankLabel}>NETWORK</Text>
-          <Text style={styles.online}>● OFFLINE / SECURE</Text>
+          <Text style={styles.rankLabel}>{translate('home.network', language)}</Text>
+          <Text style={styles.online}>{translate('home.offlineSecure', language)}</Text>
         </View>
       </View>
       <View style={styles.actions}>

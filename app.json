@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "Black Box: Incident Investigator",
+    "owner": "kadirshn",
     "slug": "black-box-incident-investigator",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -11,8 +12,10 @@
       "icon": "./assets/expo.icon"
     },
     "android": {
-      "package": "com.example.blackboxincidentinvestigator",
+      "package": "com.kadirshn.blackbox",
       "blockedPermissions": [
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.RECORD_AUDIO",
         "android.permission.SYSTEM_ALERT_WINDOW",
@@ -50,7 +53,14 @@
       ],
       "expo-localization",
       "expo-sqlite",
-      "expo-audio",
+      [
+        "expo-audio",
+        {
+          "recordAudioAndroid": false,
+          "enableBackgroundPlayback": false,
+          "enableBackgroundRecording": false
+        }
+      ],
       "expo-image",
       "expo-asset"
     ],

@@ -7,6 +7,7 @@ import { ScreenFrame } from '@/components/ScreenFrame';
 import { ErrorState, LoadingState } from '@/components/StateViews';
 import { getCaseById } from '@/content/cases/catalog';
 import { translateCase } from '@/content/locales/caseTranslations';
+import { translate } from '@/content/locales/translations';
 import { useActiveSession } from '@/features/session/useActiveSession';
 import { useSessionStore } from '@/stores/useSessionStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
@@ -23,38 +24,40 @@ export function HintScreen({ caseId, puzzleId }: { caseId: string; puzzleId: str
   if (puzzle === undefined)
     return (
       <ErrorState
-        message="İpucu verisi bulunamadı."
+        message={translate('hint.missing', language)}
         onRetry={() => router.back()}
-        retryLabel="Geri dön"
-        title="İpucu açılamadı"
+        retryLabel={translate('common.back', language)}
+        title={translate('hint.openError', language)}
       />
     );
   if (status === 'loading' || session?.caseId !== caseId)
-    return <LoadingState label="İpuçları yükleniyor" />;
+    return <LoadingState label={translate('hint.loading', language)} />;
   const used = session.puzzleStates[puzzleId]?.hintsUsed ?? 0;
 
   return (
     <ScreenFrame>
       <Text accessibilityRole="header" style={styles.title}>
-        Mira’dan İpucu
+        {translate('hint.title', language)}
       </Text>
-      <Text style={styles.caption}>Kademe {Math.min(used + 1, 3)} / 3</Text>
+      <Text style={styles.caption}>
+        {translate('hint.level', language)} {Math.min(used + 1, 3)} / 3
+      </Text>
       {puzzle.hints.slice(0, used).map((hint) => (
         <View key={hint.id} style={styles.hint}>
           <Text style={styles.hintText}>{translateCase(hint.textKey, language)}</Text>
         </View>
       ))}
-      {used === 0 ? (
-        <Text style={styles.caption}>
-          Henüz ipucu açılmadı. İpuçları yıldız puanını etkileyebilir.
-        </Text>
-      ) : null}
+      {used === 0 ? <Text style={styles.caption}>{translate('hint.empty', language)}</Text> : null}
       <PrimaryButton
         disabled={used >= puzzle.hints.length}
-        label={used >= puzzle.hints.length ? 'Tüm ipuçları açık' : 'Sonraki ipucunu göster'}
+        label={
+          used >= puzzle.hints.length
+            ? translate('hint.complete', language)
+            : translate('hint.next', language)
+        }
         onPress={() => revealHint(puzzleId)}
       />
-      <PrimaryButton label="Puzzle’a dön" onPress={() => router.back()} />
+      <PrimaryButton label={translate('hint.return', language)} onPress={() => router.back()} />
     </ScreenFrame>
   );
 }

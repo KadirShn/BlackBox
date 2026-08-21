@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from 'expo-router';
 
-import { ErrorState } from '@/components/StateViews';
+import { InvalidRouteState } from '@/components/InvalidRouteState';
 import { PuzzleScreen } from '@/features/puzzle/PuzzleScreen';
 import { firstRouteParam } from '@/utils/routeParams';
 
@@ -12,12 +12,7 @@ export default function PuzzleRoute() {
   const caseId = firstRouteParam(params.caseId);
   const puzzleId = firstRouteParam(params.puzzleId);
   return caseId === null || puzzleId === null ? (
-    <ErrorState
-      message="Puzzle rotası eksik."
-      onRetry={() => undefined}
-      retryLabel="Geri dön"
-      title="Geçersiz rota"
-    />
+    <InvalidRouteState />
   ) : (
     <PuzzleScreen caseId={caseId} puzzleId={puzzleId} />
   );

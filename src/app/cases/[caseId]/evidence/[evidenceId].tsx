@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from 'expo-router';
 
-import { ErrorState } from '@/components/StateViews';
+import { InvalidRouteState } from '@/components/InvalidRouteState';
 import { EvidenceDetailScreen } from '@/features/evidence/EvidenceDetailScreen';
 import { firstRouteParam } from '@/utils/routeParams';
 
@@ -12,12 +12,7 @@ export default function EvidenceDetailRoute() {
   const caseId = firstRouteParam(params.caseId);
   const evidenceId = firstRouteParam(params.evidenceId);
   return caseId === null || evidenceId === null ? (
-    <ErrorState
-      message="Delil rotası eksik."
-      onRetry={() => undefined}
-      retryLabel="Geri dön"
-      title="Geçersiz rota"
-    />
+    <InvalidRouteState />
   ) : (
     <EvidenceDetailScreen caseId={caseId} evidenceId={evidenceId} />
   );

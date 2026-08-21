@@ -9,18 +9,20 @@ import { ScreenFrame } from '@/components/ScreenFrame';
 import { ErrorState, LoadingState } from '@/components/StateViews';
 import { getCaseById } from '@/content/cases/catalog';
 import { translateCase } from '@/content/locales/caseTranslations';
+import { translate, type TranslationKey } from '@/content/locales/translations';
+import type { CaseDefinition } from '@/domain/case/caseSchema';
 import { useActiveSession } from '@/features/session/useActiveSession';
 import { useSessionStore } from '@/stores/useSessionStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { colors, spacing, typography } from '@/theme/tokens';
 
-const evidenceTypeLabels: Record<string, string> = {
-  message: 'Mesaj',
-  system_log: 'Sistem kaydı',
-  sensor_record: 'Sensör',
-  image: 'Görsel',
-  statement: 'Belge',
-  location_record: 'Konum',
+const evidenceTypeKeys: Record<CaseDefinition['evidence'][number]['type'], TranslationKey> = {
+  message: 'evidence.type.message',
+  system_log: 'evidence.type.system_log',
+  sensor_record: 'evidence.type.sensor_record',
+  image: 'evidence.type.image',
+  statement: 'evidence.type.statement',
+  location_record: 'evidence.type.location_record',
 };
 
 export function EvidenceDeskScreen({ caseId }: { caseId: string }) {
@@ -34,23 +36,23 @@ export function EvidenceDeskScreen({ caseId }: { caseId: string }) {
   if (definition === null)
     return (
       <ErrorState
-        message="Vaka verisi bulunamadı."
+        message={translate('evidence.deskMissing', language)}
         onRetry={() => router.back()}
-        retryLabel="Geri dön"
-        title="Dosya hatası"
+        retryLabel={translate('common.back', language)}
+        title={translate('evidence.fileError', language)}
       />
     );
-  if (status === 'loading' || session?.caseId !== caseId)
-    return <LoadingState label="Oturum yükleniyor" />;
   if (status === 'error')
     return (
       <ErrorState
-        message="Kayıtlı oturum okunamadı."
+        message={translate('evidence.sessionMissing', language)}
         onRetry={() => router.replace({ pathname: '/cases/[caseId]', params: { caseId } })}
-        retryLabel="Brifinge dön"
-        title="Oturum açılamadı"
+        retryLabel={translate('evidence.returnBriefing', language)}
+        title={translate('evidence.sessionOpenError', language)}
       />
     );
+  if (status === 'loading' || session?.caseId !== caseId)
+    return <LoadingState label={translate('evidence.sessionLoading', language)} />;
 
   const solvedCount = Object.values(session.puzzleStates).filter(
     (item) => item.status === 'solved',
@@ -63,15 +65,20 @@ export function EvidenceDeskScreen({ caseId }: { caseId: string }) {
     <ScreenFrame>
       <ProgressHeader
         completed={session.openedEvidenceIds.length + solvedCount}
-        label="İnceleme ilerlemesi"
+        label={translate('evidence.progress', language)}
         total={definition.evidence.length + definition.puzzles.length}
       />
       <Text accessibilityRole="header" style={styles.title}>
-        Delil Masası
+        {translate('evidence.deskTitle', language)}
       </Text>
       <Text style={styles.subtitle}>{translateCase(definition.summaryKey, language)}</Text>
+      {status === 'recovered' ? (
+        <Text accessibilityLiveRegion="assertive" style={styles.recoveryNotice}>
+          {translate('evidence.recovered', language)}
+        </Text>
+      ) : null}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Dijital deliller</Text>
+        <Text style={styles.sectionTitle}>{translate('evidence.section', language)}</Text>
         {definition.evidence.map((evidence) => (
           <EvidenceCard
             description={translateCase(evidence.descriptionKey, language)}
@@ -85,12 +92,12 @@ export function EvidenceDeskScreen({ caseId }: { caseId: string }) {
             }}
             opened={session.openedEvidenceIds.includes(evidence.id)}
             title={translateCase(evidence.titleKey, language)}
-            typeLabel={evidenceTypeLabels[evidence.type] ?? evidence.type}
+            typeLabel={translate(evidenceTypeKeys[evidence.type], language)}
           />
         ))}
       </View>
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Puzzle</Text>
+        <Text style={styles.sectionTitle}>{translate('evidence.puzzles', language)}</Text>
         {definition.puzzles.map((puzzle) => (
           <PrimaryButton
             key={puzzle.id}
@@ -107,7 +114,11 @@ export function EvidenceDeskScreen({ caseId }: { caseId: string }) {
       </View>
       <PrimaryButton
         disabled={!reportReady}
-        label={reportReady ? 'Raporu hazırla' : 'Rapor için puzzle’ı çöz'}
+        label={
+          reportReady
+            ? translate('evidence.reportReady', language)
+            : translate('evidence.reportLocked', language)
+        }
         onPress={() => router.push({ pathname: '/cases/[caseId]/report', params: { caseId } })}
       />
     </ScreenFrame>
@@ -117,6 +128,7 @@ export function EvidenceDeskScreen({ caseId }: { caseId: string }) {
 const styles = StyleSheet.create({
   title: { ...typography.screenTitle, color: colors.text.primary },
   subtitle: { ...typography.body, color: colors.text.secondary },
+  recoveryNotice: { ...typography.body, color: colors.status.warning },
   section: { gap: spacing.md },
   sectionTitle: { ...typography.sectionTitle, color: colors.text.primary },
 });

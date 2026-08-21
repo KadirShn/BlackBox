@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from 'expo-router';
 
-import { ErrorState } from '@/components/StateViews';
+import { InvalidRouteState } from '@/components/InvalidRouteState';
 import { HintScreen } from '@/features/hints/HintScreen';
 import { firstRouteParam } from '@/utils/routeParams';
 
@@ -12,12 +12,7 @@ export default function HintRoute() {
   const caseId = firstRouteParam(params.caseId);
   const puzzleId = firstRouteParam(params.puzzleId);
   return caseId === null || puzzleId === null ? (
-    <ErrorState
-      message="İpucu rotası eksik."
-      onRetry={() => undefined}
-      retryLabel="Kapat"
-      title="Geçersiz rota"
-    />
+    <InvalidRouteState />
   ) : (
     <HintScreen caseId={caseId} puzzleId={puzzleId} />
   );
