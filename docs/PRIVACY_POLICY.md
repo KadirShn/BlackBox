@@ -36,5 +36,8 @@ Yeni bir veri toplama, reklam, hesap, analytics veya crash raporlama özelliği 
 ve Google Play Data Safety beyanı yayınlanmadan önce güncellenir. Gizlilik soruları için Google
 Play mağaza sayfasındaki doğrulanmış geliştirici iletişim kanalı kullanılabilir.
 
-Bu metin production yayını öncesinde herkese açık, HTTPS kullanan ve PDF olmayan kalıcı bir web
-sayfasında yayınlanmalı; aynı URL Play Console'daki **Privacy policy** alanına girilmelidir.
+Herkese açık politika adresi:
+
+`https://blackboxkdr.expo.app/privacy`
+
+Bu HTTPS adresi Play Console'daki **Privacy policy** alanına girilmelidir.

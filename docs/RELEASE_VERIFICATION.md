@@ -45,5 +45,7 @@ npx expo-doctor@latest
 - Kurulu release paketi `com.kadirshn.blackbox`, versionName `1.0.0`, targetSdk 36'dır.
 - Manifest yalnızca internet/ağ durumu, ses ayarı, titreşim ve wake-lock işlev izinlerini ister;
   mikrofon, depolama, overlay ve foreground-service izni yoktur.
-- Production AAB, Play Console alanları, public HTTPS gizlilik URL'si ve kapalı test sonucu kullanıcı
-  hesabında tamamlanacaktır.
+- Production AAB, kalan Play Console alanları ve kapalı test sonucu kullanıcı hesabında
+  tamamlanacaktır.
+- Gizlilik politikası EAS Hosting production ortamında yayınlandı:
+  `https://blackboxkdr.expo.app/privacy`.

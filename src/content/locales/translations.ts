@@ -187,7 +187,7 @@ const tr = {
   'settings.large': 'Büyük',
   'settings.extraLarge': 'Çok büyük',
   'settings.privacy': 'Gizlilik ve veri kullanımı',
-  'privacy.title': 'Gizlilik ve veri kullanımı',
+  'privacy.title': 'Black Box: Incident Investigator — Gizlilik Politikası',
   'privacy.summary':
     'Black Box hesap, reklam veya analiz sistemi kullanmaz. Oyun ilerlemesi yalnızca cihazınızda saklanır.',
   'privacy.dataTitle': 'Toplanan veriler',
@@ -195,7 +195,7 @@ const tr = {
     'Kişisel bilgi, konum, kişi listesi, fotoğraf, mikrofon kaydı, reklam kimliği veya cihaz kimliği toplanmaz ve paylaşılmaz.',
   'privacy.storageTitle': 'Yerel kayıt',
   'privacy.storageBody':
-    'Vaka ilerlemesi, aktif oturum ve erişilebilirlik ayarları uygulamanın yerel SQLite veritabanında tutulur. Uygulamayı kaldırmak bu yerel verileri silebilir.',
+    'Vaka ilerlemesi, aktif oturum ve erişilebilirlik ayarları yalnızca uygulamanın yerel SQLite veritabanında tutulur. Bu veriler dışarı aktarılmaz ve siz uygulamayı kaldırana veya uygulama verilerini temizleyene kadar cihazda kalır.',
   'privacy.contactTitle': 'İletişim',
   'privacy.contactBody':
     'Gizlilik soruları için Google Play mağaza sayfasındaki geliştirici iletişim kanalını kullanabilirsiniz.',
@@ -392,7 +392,7 @@ const en: Record<keyof typeof tr, string> = {
   'settings.large': 'Large',
   'settings.extraLarge': 'Extra large',
   'settings.privacy': 'Privacy and data use',
-  'privacy.title': 'Privacy and data use',
+  'privacy.title': 'Black Box: Incident Investigator — Privacy Policy',
   'privacy.summary':
     'Black Box does not use accounts, advertising, or analytics. Game progress is stored only on your device.',
   'privacy.dataTitle': 'Data collection',
@@ -400,7 +400,7 @@ const en: Record<keyof typeof tr, string> = {
     'No personal information, location, contacts, photos, microphone recordings, advertising IDs, or device identifiers are collected or shared.',
   'privacy.storageTitle': 'Local storage',
   'privacy.storageBody':
-    'Case progress, the active session, and accessibility settings are kept in the app’s local SQLite database. Uninstalling the app may remove this local data.',
+    'Case progress, the active session, and accessibility settings are stored only in the app’s local SQLite database. They are not transmitted and remain on the device until you uninstall the app or clear its app data.',
   'privacy.contactTitle': 'Contact',
   'privacy.contactBody':
     'For privacy questions, use the developer contact channel shown on the Google Play store listing.',

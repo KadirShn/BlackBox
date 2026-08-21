@@ -115,7 +115,7 @@ Bozuk aktif session tüm ilerlemeyi silmemelidir. Yalnızca ilgili oturum güven
 
 - [ ] Oyun kategorisi doğru
 - [ ] İçerik derecelendirme doğru
-- [ ] Gizlilik politikası doğru
+- [x] Gizlilik politikası doğru
 - [x] Data Safety gerçek davranışla uyumlu
 - [ ] Ekran görüntüleri gerçek uygulamadan
 - [x] Açıklama vaat edilmeyen özellik içermiyor

@@ -73,7 +73,7 @@ the link behind the Black Box.
 ## Console'da kullanıcı tarafından girilecek bilgiler
 
 - Doğrulanmış destek e-postası (zorunlu)
-- Gizlilik politikasının HTTPS URL'si
+- Gizlilik politikası: `https://blackboxkdr.expo.app/privacy`
 - Uygulamanın ücretsiz/ücretli dağıtım kararı; ücretsiz yayınlanan uygulamanın daha sonra ücretliye
   çevrilemeyeceği dikkate alınmalıdır
 - Dağıtılacak ülkeler ve bölgeler
