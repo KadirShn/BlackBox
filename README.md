@@ -65,8 +65,6 @@ npm run export:web
 
 ## Android build
 
-Yerel Android build yönergeleri için [`docs/ANDROID_STUDIO_BUILD.md`](docs/ANDROID_STUDIO_BUILD.md) belgesine bakın.
-
 Google Play için production Android App Bundle oluşturmak için:
 
 ```bash
