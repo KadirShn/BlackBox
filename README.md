@@ -2,6 +2,17 @@
 
 Black Box: Incident Investigator, dijital delilleri inceleyerek olayları çözmeye dayanan çevrimdışı bir puzzle ve hikâye oyunudur. Oyuncu brifingleri okur, kanıtları karşılaştırır, zaman çizelgelerini düzenler, çelişkileri tespit eder ve soruşturma raporunu tamamlar.
 
+## Ekran görüntüleri
+
+<p align="center">
+  <img src="assets/readme/ana-ekran.png" alt="Black Box ana ekranı" width="23%" />
+  <img src="assets/readme/vaka-arsivi.png" alt="Vaka arşivi" width="23%" />
+  <img src="assets/readme/delil-masasi.png" alt="Delil masası" width="23%" />
+  <img src="assets/readme/zaman-cizelgesi.png" alt="Zaman çizelgesi puzzle'ı" width="23%" />
+</p>
+
+<p align="center"><sub>Ana ekran · Vaka arşivi · Delil masası · Zaman çizelgesi</sub></p>
+
 ## Özellikler
 
 - Bir tutorial ve dört ana vaka
