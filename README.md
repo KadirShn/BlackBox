@@ -1,54 +1,58 @@
-# Black Box: Incident Investigator — Codex Proje Paketi
+# Black Box: Incident Investigator
 
-Bu paket, Expo ve TypeScript ile Android öncelikli, reklamsız bir puzzle + hikâye oyunu geliştirmek için hazırlanmıştır.
+Black Box: Incident Investigator, dijital delilleri inceleyerek olayları çözmeye dayanan çevrimdışı bir puzzle ve hikâye oyunudur. Oyuncu brifingleri okur, kanıtları karşılaştırır, zaman çizelgelerini düzenler, çelişkileri tespit eder ve soruşturma raporunu tamamlar.
 
-## Dosyalar
+## Özellikler
 
-1. `GAME_DESIGN_DOCUMENT.md` — oyun tasarımı ve MVP kapsamı
-2. `TECHNICAL_DESIGN.md` — mimari, veri modelleri ve teknik kararlar
-3. `AGENTS.md` — Codex'in projede uyması gereken kalıcı kurallar
-4. `TASKS.md` — fazlara ayrılmış uygulanabilir görev listesi
-5. `CASE_FORMAT.md` — veri odaklı vaka ve puzzle formatı
-6. `UI_GUIDE.md` — görsel dil, erişilebilirlik ve hareket kuralları
-7. `TESTING_AND_RELEASE.md` — test, kalite ve Google Play hazırlığı
-8. `MASTER_PROMPT.md` — yeni Codex oturumuna yapıştırılacak başlangıç promptu
+- Bir tutorial ve dört ana vaka
+- Timeline, log analizi, çelişki ve bağlantı puzzle'ları
+- Veri odaklı ve çalışma zamanında doğrulanan vaka içerikleri
+- Çevrimdışı oynanış ve SQLite tabanlı yerel kayıt sistemi
+- Türkçe ve İngilizce dil desteği
+- Başarımlar, istatistikler ve tekrar oynama desteği
+- Büyük metin, ekran okuyucu ve reduce motion desteği
+- Reklamsız ve hesap gerektirmeyen deneyim
 
-## Kullanım
+## Teknoloji
 
-1. Boş bir klasör oluşturun.
-2. Bu `.md` dosyalarının tamamını proje köküne kopyalayın.
-3. Codex'i proje kökünde açın.
-4. `MASTER_PROMPT.md` içeriğini ilk mesaj olarak gönderin.
-5. Codex'in önce dokümanları okuyup Faz 0 ve Faz 1 ile başlamasını bekleyin.
-6. Her faz sonunda uygulamayı çalıştırın ve git commit alın.
+- Expo ve React Native
+- TypeScript strict mode
+- Expo Router
+- SQLite
+- Zustand
+- Zod
+- Jest ve React Native Testing Library
 
-## Temel ürün kararı
+## Gereksinimler
 
-- Reklam SDK'sı bulunmayacak.
-- İlk sürüm tamamen reklamsız ve çevrimdışı oynanabilir olacak.
-- MVP'de ödeme sistemi bulunmayabilir. Mimari gelecekte ücretli vaka paketlerine uygun tutulur.
-- Android ilk platformdur; platform bağımsız kod yazılır.
-- Expo Go uyumluluğu zorunlu değildir. Native bağımlılık gerekirse development build kullanılır.
+- Node.js 22.13 veya daha yeni bir LTS sürümü
+- npm
+- Android geliştirmesi için Android Studio ve yapılandırılmış Android SDK
 
-## Geliştirme ortamı
-
-- Node.js: Expo SDK 57'nin desteklediği Node 22.13 veya daha yeni LTS.
-- Paket yöneticisi: npm; `package-lock.json` bağlayıcı kilit dosyasıdır.
-- Kalıcı Android application ID: `com.kadirshn.blackbox`.
-
-Kurulum ve çalıştırma:
+## Kurulum
 
 ```bash
 npm install
+```
+
+## Geliştirme
+
+Expo geliştirme sunucusunu başlatmak için:
+
+```bash
 npm start
+```
+
+Uygulamayı hedef platformda çalıştırmak için:
+
+```bash
 npm run android
 npm run web
 ```
 
-Android Studio ile yerel debug ve kurulabilir preview APK adımları için
-[`docs/ANDROID_STUDIO_BUILD.md`](docs/ANDROID_STUDIO_BUILD.md) belgesine bakın.
+Kalıcı Android application ID değeri `com.kadirshn.blackbox` olarak tanımlıdır.
 
-Kalite kontrolleri:
+## Kalite kontrolleri
 
 ```bash
 npm run typecheck
@@ -57,14 +61,32 @@ npm test
 npm run format:check
 npm run export:android
 npm run export:web
-npm run build:android:debug
-npm run build:android:preview
 ```
 
-Expo SDK ile ilişkili native paketleri sürüm numarası tahmin ederek eklemeyin:
+## Android build
+
+Yerel Android build yönergeleri için [`docs/ANDROID_STUDIO_BUILD.md`](docs/ANDROID_STUDIO_BUILD.md) belgesine bakın.
+
+Google Play için production Android App Bundle oluşturmak için:
 
 ```bash
-npx expo install <paket-adı>
+npx eas-cli@latest build --platform android --profile production
 ```
 
-EAS profilleri `eas.json` içinde `development`, `preview` ve `production` olarak tanımlıdır. Development profili kullanılmadan önce `expo-dev-client` kurulumu doğrulanmalıdır.
+EAS yapılandırmasında `development`, `preview` ve `production` build profilleri bulunur.
+
+## Proje yapısı
+
+```text
+app/          Expo Router ekranları ve navigasyon
+src/          Domain, veri, oyun motoru, servis ve UI kodları
+assets/       Uygulama görselleri, fontlar ve sesler
+scripts/      İçerik doğrulama ve geliştirme araçları
+docs/         Build, test ve mağaza yayın belgeleri
+```
+
+Vaka çözümleri ekranlara gömülmez. Vaka ve puzzle içerikleri veri dosyalarında tanımlanır, Zod şemalarıyla doğrulanır ve React'tan bağımsız oyun motoru tarafından değerlendirilir.
+
+## Gizlilik
+
+Oyun hesabı, reklam SDK'sı veya backend kullanmaz. Ana oyun işlevleri internet bağlantısı olmadan çalışır ve oyuncu ilerlemesi cihazdaki yerel veritabanında saklanır.
