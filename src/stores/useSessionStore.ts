@@ -12,6 +12,7 @@ type SessionState = {
   useHint: (puzzleId: string) => void;
   selectHypothesis: (hypothesisId: string) => void;
   toggleReportEvidence: (evidenceId: string) => void;
+  recordReportMistake: () => void;
 };
 
 function now(): string {
@@ -31,6 +32,7 @@ export function createSession(caseId: string): ActiveSession {
     hintsUsed: 0,
     selectedHypothesisId: null,
     selectedEvidenceIds: [],
+    reportMistakes: 0,
     updatedAt: now(),
   };
 }
@@ -118,6 +120,18 @@ export const useSessionStore = create<SessionState>((set) => ({
             session: {
               ...state.session,
               selectedEvidenceIds: uniqueToggle(state.session.selectedEvidenceIds, evidenceId),
+              updatedAt: now(),
+            },
+          },
+    ),
+  recordReportMistake: () =>
+    set((state) =>
+      state.session === null
+        ? state
+        : {
+            session: {
+              ...state.session,
+              reportMistakes: state.session.reportMistakes + 1,
               updatedAt: now(),
             },
           },

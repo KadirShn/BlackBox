@@ -5,6 +5,7 @@ export type ReportSubmission = {
   evidenceIds: ReadonlySet<string>;
   solvedPuzzleIds: ReadonlySet<string>;
   hintsUsed: number;
+  reportMistakes: number;
 };
 
 export type ReportEvaluation =
@@ -28,11 +29,12 @@ export function evaluateReport(
   ) {
     return { correct: false, missingEvidenceIds, missingPuzzleIds };
   }
-  if (submission.hintsUsed <= definition.scoring.maxHintsForThreeStars) {
-    return { correct: true, stars: 3 };
-  }
-  if (submission.hintsUsed <= definition.scoring.maxHintsForTwoStars) {
-    return { correct: true, stars: 2 };
-  }
-  return { correct: true, stars: 1 };
+  const hintStars =
+    submission.hintsUsed <= definition.scoring.maxHintsForThreeStars
+      ? 3
+      : submission.hintsUsed <= definition.scoring.maxHintsForTwoStars
+        ? 2
+        : 1;
+  // Each rejected report costs a star so hypotheses cannot be guessed for free.
+  return { correct: true, stars: Math.max(1, hintStars - submission.reportMistakes) as 1 | 2 | 3 };
 }

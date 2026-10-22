@@ -30,6 +30,7 @@ export function ReportScreen({ caseId }: { caseId: string }) {
   const session = useSessionStore((state) => state.session);
   const selectHypothesis = useSessionStore((state) => state.selectHypothesis);
   const toggleEvidence = useSessionStore((state) => state.toggleReportEvidence);
+  const recordReportMistake = useSessionStore((state) => state.recordReportMistake);
   const clearSession = useSessionStore((state) => state.clear);
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -74,8 +75,10 @@ export function ReportScreen({ caseId }: { caseId: string }) {
       evidenceIds: new Set(activeSession.selectedEvidenceIds),
       solvedPuzzleIds,
       hintsUsed: activeSession.hintsUsed,
+      reportMistakes: activeSession.reportMistakes,
     });
     if (!evaluation.correct) {
+      recordReportMistake();
       setFeedback(translate('report.incorrect', language));
       void playFeedbackHaptic(hapticsEnabled, 'warning');
       void playUiSound('warning', soundEffectsEnabled);

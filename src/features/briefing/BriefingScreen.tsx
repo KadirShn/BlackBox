@@ -46,7 +46,7 @@ export function BriefingScreen({ caseId }: { caseId: string }) {
       const progress = await repositories.progress.get(caseId);
       await repositories.progress.save({
         caseId,
-        status: 'in_progress',
+        status: progress?.status === 'completed' ? 'completed' : 'in_progress',
         bestStars: progress?.bestStars ?? 0,
         attempts: (progress?.attempts ?? 0) + (existingSession === null ? 1 : 0),
         hintsUsedBest: progress?.hintsUsedBest ?? null,

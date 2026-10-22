@@ -40,7 +40,8 @@ export function HintScreen({ caseId, puzzleId }: { caseId: string; puzzleId: str
         {translate('hint.title', language)}
       </Text>
       <Text style={styles.caption}>
-        {translate('hint.level', language)} {Math.min(used + 1, 3)} / 3
+        {translate('hint.level', language)} {Math.min(used + 1, puzzle.hints.length)} /{' '}
+        {puzzle.hints.length}
       </Text>
       {puzzle.hints.slice(0, used).map((hint) => (
         <View key={hint.id} style={styles.hint}>

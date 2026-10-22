@@ -36,6 +36,7 @@ describe('achievement evaluator', () => {
         hintsUsed: 0,
         selectedHypothesisId: blackBoxCase.solution.correctHypothesisId,
         selectedEvidenceIds: blackBoxCase.solution.requiredEvidenceIds,
+        reportMistakes: 0,
         updatedAt: '2026-08-04T00:00:00.000Z',
       },
     });

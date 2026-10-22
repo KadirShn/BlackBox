@@ -163,7 +163,7 @@ const tr = {
   'report.sessionMissing': 'Oturum okunamadı.',
   'report.selectHypothesis': 'Önce bir hipotez seçmelisin.',
   'report.incorrect':
-    'Rapor kanıtlarla uyuşmuyor. Hipotezi ve destek delillerini yeniden kontrol et.',
+    'Rapor kanıtlarla uyuşmuyor. Her hatalı rapor bir yıldız kaybettirir; hipotezi ve destek delillerini yeniden kontrol et.',
   'report.saveError': 'Rapor yerel arşive kaydedilemedi. İlerlemen korunuyor; tekrar dene.',
   'report.title': 'Nihai Rapor',
   'report.hypothesis': '1 · Hipotez',
@@ -367,7 +367,7 @@ const en: Record<keyof typeof tr, string> = {
   'report.sessionMissing': 'The session could not be read.',
   'report.selectHypothesis': 'Select a hypothesis first.',
   'report.incorrect':
-    'The report does not match the evidence. Review the hypothesis and supporting evidence.',
+    'The report does not match the evidence. Each rejected report costs a star; review the hypothesis and supporting evidence.',
   'report.saveError':
     'The report could not be saved locally. Your progress is preserved; try again.',
   'report.title': 'Final Report',

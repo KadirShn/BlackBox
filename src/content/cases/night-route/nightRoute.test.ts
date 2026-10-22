@@ -26,6 +26,7 @@ describe('Gece Rotası content', () => {
         evidenceIds: new Set(['access-audit', 'route-log']),
         solvedPuzzleIds: new Set(['night-timeline', 'night-logs']),
         hintsUsed: 0,
+        reportMistakes: 0,
       }),
     ).toEqual({ correct: true, stars: 3 });
   });

@@ -85,6 +85,7 @@ describe('SQLite migrations and repositories', () => {
       hintsUsed: 0,
       selectedHypothesisId: null,
       selectedEvidenceIds: [],
+      reportMistakes: 0,
       updatedAt,
     };
     await repositories.sessions.save(session);

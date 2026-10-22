@@ -16,6 +16,7 @@ export const activeSessionSchema = z.object({
   hintsUsed: z.number().int().min(0),
   selectedHypothesisId: z.string().min(1).nullable(),
   selectedEvidenceIds: z.array(z.string().min(1)),
+  reportMistakes: z.number().int().min(0).default(0),
   updatedAt: z.string().datetime(),
 });
 

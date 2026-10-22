@@ -34,6 +34,7 @@ describe('reconcileActiveSession', () => {
       hintsUsed: 3,
       selectedHypothesisId: 'removed-hypothesis',
       selectedEvidenceIds: [validEvidenceId, 'removed-evidence'],
+      reportMistakes: 0,
       updatedAt: '2026-08-21T00:00:00.000Z',
     };
 

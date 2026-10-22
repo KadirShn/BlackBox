@@ -51,7 +51,9 @@ export function ResultScreen({ caseId, stars }: { caseId: string; stars: 1 | 2 |
       {nextCaseId !== null ? (
         <PrimaryButton
           label={translate('result.next', language)}
-          onPress={() => router.replace('/cases')}
+          onPress={() =>
+            router.replace({ pathname: '/cases/[caseId]', params: { caseId: nextCaseId } })
+          }
         />
       ) : null}
     </ScreenFrame>
