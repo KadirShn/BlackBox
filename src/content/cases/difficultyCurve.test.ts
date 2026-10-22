@@ -1,20 +1,28 @@
 import { caseCatalog } from '@/content/cases/catalog';
+import { puzzleRegistry } from '@/engine/puzzle-runtime/puzzleRegistry';
 
-describe('MVP content difficulty curve', () => {
-  it('increases estimated duration and does not reduce puzzle count', () => {
+describe('content difficulty curve', () => {
+  it('increases duration and does not reduce puzzle count within each chapter', () => {
     for (let index = 1; index < caseCatalog.length; index += 1) {
-      expect(caseCatalog[index]?.estimatedMinutes).toBeGreaterThanOrEqual(
-        caseCatalog[index - 1]?.estimatedMinutes ?? 0,
-      );
-      expect(caseCatalog[index]?.puzzles.length).toBeGreaterThanOrEqual(
-        caseCatalog[index - 1]?.puzzles.length ?? 0,
-      );
+      const previous = caseCatalog[index - 1];
+      const current = caseCatalog[index];
+      if (previous === undefined || current === undefined) continue;
+      expect(current.chapter).toBeGreaterThanOrEqual(previous.chapter);
+      if (current.chapter !== previous.chapter) continue;
+      expect(current.estimatedMinutes).toBeGreaterThanOrEqual(previous.estimatedMinutes);
+      expect(current.puzzles.length).toBeGreaterThanOrEqual(previous.puzzles.length);
     }
   });
 
-  it('uses all four puzzle types in the finale', () => {
+  it('uses every puzzle type in the final case', () => {
     expect(new Set(caseCatalog.at(-1)?.puzzles.map((puzzle) => puzzle.type))).toEqual(
-      new Set(['timeline', 'log_analyzer', 'contradiction', 'connection_board']),
+      new Set(Object.keys(puzzleRegistry)),
     );
+  });
+
+  it('gives every File II case a misleading clue to rule out', () => {
+    for (const definition of caseCatalog.filter((item) => item.chapter === 2)) {
+      expect(definition.solution.misleadingEvidenceIds?.length ?? 0).toBeGreaterThan(0);
+    }
   });
 });

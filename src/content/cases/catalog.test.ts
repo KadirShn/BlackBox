@@ -9,15 +9,23 @@ describe('case progression catalog', () => {
     expect(getNextCaseId('unknown')).toBeNull();
   });
 
-  it('contains the tutorial and four main cases in story order', () => {
+  it('contains both chapters in story order', () => {
     expect(caseCatalog.map((item) => item.id)).toEqual([
       'tutorial-missing-eleven',
       'case-night-route',
       'case-silent-station',
       'case-wrong-guest',
       'case-black-box',
+      'case-cold-chain',
+      'case-ghost-signal',
+      'case-last-signature',
     ]);
-    expect(getNextCaseId('case-black-box')).toBeNull();
+    expect(caseCatalog.map((item) => item.chapter)).toEqual([1, 1, 1, 1, 1, 2, 2, 2]);
+  });
+
+  it('continues into File II after the Black Box case', () => {
+    expect(getNextCaseId('case-black-box')).toBe('case-cold-chain');
+    expect(getNextCaseId('case-last-signature')).toBeNull();
   });
 
   it('isolates invalid external content instead of throwing during import', () => {

@@ -1,5 +1,6 @@
+import { getCaseById } from '@/content/cases/catalog';
 import { tutorialCase } from '@/content/cases/tutorial';
-import { evaluateReport } from '@/engine/scoring/scoringEngine';
+import { countsAsReportMistake, evaluateReport } from '@/engine/scoring/scoringEngine';
 
 const correctSubmission = {
   hypothesisId: 'maintenance-mode',
@@ -43,4 +44,56 @@ describe('scoringEngine', () => {
       ).toEqual({ correct: true, stars });
     },
   );
+
+  describe('rejection reasons', () => {
+    const coldChain = getCaseById('case-cold-chain');
+    if (coldChain === null) throw new Error('Cold Chain case is missing');
+    const solved = new Set(coldChain.puzzles.map((puzzle) => puzzle.id));
+    const required = coldChain.solution.requiredEvidenceIds;
+    const submit = (overrides: Partial<Parameters<typeof evaluateReport>[1]>) =>
+      evaluateReport(coldChain, {
+        hypothesisId: coldChain.solution.correctHypothesisId,
+        evidenceIds: new Set(required),
+        solvedPuzzleIds: solved,
+        hintsUsed: 0,
+        reportMistakes: 0,
+        ...overrides,
+      });
+
+    it('blocks the report without penalty until required puzzles are solved', () => {
+      const result = submit({ solvedPuzzleIds: new Set() });
+      expect(result).toMatchObject({ correct: false, reason: 'missing_puzzles' });
+      expect(countsAsReportMistake('missing_puzzles')).toBe(false);
+    });
+
+    it('reports a wrong hypothesis before evidence problems', () => {
+      expect(submit({ hypothesisId: 'compressor-failure', evidenceIds: new Set() })).toMatchObject({
+        correct: false,
+        reason: 'hypothesis',
+      });
+    });
+
+    it('rejects a report that cites a misleading clue', () => {
+      expect(submit({ evidenceIds: new Set([...required, 'compressor-cycle']) })).toMatchObject({
+        correct: false,
+        reason: 'misleading_evidence',
+        misleadingEvidenceIds: ['compressor-cycle'],
+      });
+    });
+
+    it('rejects selecting every clue instead of reasoning about them', () => {
+      expect(
+        submit({ evidenceIds: new Set(coldChain.evidence.map((item) => item.id)) }),
+      ).toMatchObject({ correct: false, reason: 'misleading_evidence' });
+    });
+
+    it('counts the critical clues that are missing', () => {
+      expect(submit({ evidenceIds: new Set(required.slice(1)) })).toMatchObject({
+        correct: false,
+        reason: 'missing_evidence',
+        missingEvidenceIds: [required[0]],
+      });
+      expect(countsAsReportMistake('missing_evidence')).toBe(true);
+    });
+  });
 });

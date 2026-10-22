@@ -3,9 +3,11 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { AppText as Text } from '@/components/AppText';
 import { ErrorState, LoadingState } from '@/components/StateViews';
+import { caseCatalog } from '@/content/cases/catalog';
 import { translate } from '@/content/locales/translations';
 import { getRepositories } from '@/data/database/initializeDatabase';
-import type { AchievementId } from '@/domain/achievements/achievement';
+import { achievementIds, type AchievementId } from '@/domain/achievements/achievement';
+import { getRankStatus } from '@/engine/progression/rank';
 import { buildStatistics, type PlayerStatistics } from '@/engine/statistics/buildStatistics';
 import { logger } from '@/services/logger/logger';
 import { useSettingsStore } from '@/stores/useSettingsStore';
@@ -66,10 +68,13 @@ export function StatisticsScreen() {
     );
   }
 
-  const { statistics, achievementIds } = loadState.data;
+  const { statistics } = loadState.data;
+  const unlockedIds = new Set(loadState.data.achievementIds);
+  const rank = getRankStatus(statistics.totalStars, caseCatalog.length);
   const rows = [
+    [translate('statistics.rank', language), translate(`rank.${rank.rank}`, language)],
     [translate('statistics.completed', language), String(statistics.completedCases)],
-    [translate('statistics.stars', language), String(statistics.totalStars)],
+    [translate('statistics.stars', language), `${statistics.totalStars} / ${rank.maxStars}`],
     [translate('statistics.attempts', language), String(statistics.totalAttempts)],
     [translate('statistics.hintFree', language), String(statistics.hintFreeCases)],
   ] as const;
@@ -90,15 +95,33 @@ export function StatisticsScreen() {
       <Text accessibilityRole="header" style={styles.sectionTitle}>
         {translate('achievements.title', language)}
       </Text>
-      {achievementIds.length === 0 ? (
-        <Text style={styles.label}>{translate('achievements.empty', language)}</Text>
-      ) : (
-        achievementIds.map((id) => (
-          <View key={id} style={styles.achievement}>
-            <Text style={styles.value}>✓ {translate(`achievement.${id}`, language)}</Text>
+      <Text style={styles.label}>
+        {translate('achievements.progress', language)
+          .replace('{count}', String(unlockedIds.size))
+          .replace('{total}', String(achievementIds.length))}
+      </Text>
+      {achievementIds.map((id) => {
+        const unlocked = unlockedIds.has(id);
+        return (
+          <View
+            accessibilityLabel={`${translate(`achievement.${id}`, language)}, ${
+              unlocked
+                ? translate(`achievement.${id}.description`, language)
+                : translate('achievements.locked', language)
+            }`}
+            accessible
+            key={id}
+            style={[styles.achievement, !unlocked && styles.achievementLocked]}
+          >
+            <Text style={unlocked ? styles.value : styles.lockedTitle}>
+              {unlocked ? '✓' : '◆'} {translate(`achievement.${id}`, language)}
+            </Text>
+            <Text style={styles.description}>
+              {translate(`achievement.${id}.description`, language)}
+            </Text>
           </View>
-        ))
-      )}
+        );
+      })}
     </ScrollView>
   );
 }
@@ -125,8 +148,12 @@ const styles = StyleSheet.create({
   achievement: {
     minHeight: layout.minTouchTarget,
     justifyContent: 'center',
+    gap: spacing.xs,
     padding: spacing.md,
     borderRadius: radii.md,
     backgroundColor: colors.surface.card,
   },
+  achievementLocked: { opacity: 0.55 },
+  lockedTitle: { ...typography.body, color: colors.text.secondary, fontWeight: '700' },
+  description: { ...typography.caption, color: colors.text.secondary },
 });

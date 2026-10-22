@@ -1,9 +1,11 @@
 import type {
+  CodeEntryPuzzleDefinition,
   ConnectionBoardPuzzleDefinition,
   ContradictionPuzzleDefinition,
   LogAnalyzerPuzzleDefinition,
 } from '@/domain/case/caseSchema';
 import {
+  evaluateCodeEntry,
   evaluateConnectionBoard,
   evaluateContradiction,
   evaluateLogAnalyzer,
@@ -71,5 +73,35 @@ describe('puzzle registry evaluators', () => {
       false,
     );
     expect(restorePuzzleAnswer(definition, { bad: true })).toEqual([]);
+  });
+
+  it('accepts codes regardless of case, spacing, and separators', () => {
+    const definition: CodeEntryPuzzleDefinition = {
+      ...base,
+      id: 'code',
+      type: 'code_entry',
+      promptKey: 'prompt',
+      answer: 'TX-904',
+      inputMode: 'text',
+    };
+    expect(evaluateCodeEntry(definition, 'TX-904')).toBe(true);
+    expect(evaluateCodeEntry(definition, ' tx 904 ')).toBe(true);
+    expect(evaluateCodeEntry(definition, 'TX904')).toBe(true);
+    expect(evaluateCodeEntry(definition, 'TX-409')).toBe(false);
+    expect(restorePuzzleAnswer(definition, 42)).toBe('');
+  });
+
+  it('accepts a clock answer with or without the colon', () => {
+    const definition: CodeEntryPuzzleDefinition = {
+      ...base,
+      id: 'clock',
+      type: 'code_entry',
+      promptKey: 'prompt',
+      answer: '01:10',
+      inputMode: 'numeric',
+    };
+    expect(evaluateCodeEntry(definition, '0110')).toBe(true);
+    expect(evaluateCodeEntry(definition, '01:10')).toBe(true);
+    expect(evaluateCodeEntry(definition, '110')).toBe(false);
   });
 });

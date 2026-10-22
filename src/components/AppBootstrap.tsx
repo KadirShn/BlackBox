@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 
+import { AmbientMusic } from '@/components/AmbientMusic';
 import { ErrorState, LoadingState } from '@/components/StateViews';
 import { SessionAutosave } from '@/components/SessionAutosave';
 import { translate } from '@/content/locales/translations';
@@ -103,6 +104,7 @@ export function AppBootstrap({ children }: { children: ReactNode }) {
   return (
     <>
       <SessionAutosave />
+      <AmbientMusic />
       {children}
     </>
   );

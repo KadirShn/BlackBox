@@ -1,5 +1,6 @@
 import { openDatabaseAsync } from 'expo-sqlite';
 
+import { caseCatalog } from '@/content/cases/catalog';
 import { ExpoSqlDatabase, type SqlDatabase } from '@/data/database/sqlDatabase';
 import { runMigrations } from '@/data/migrations/runMigrations';
 import { ActiveSessionRepository } from '@/data/repositories/ActiveSessionRepository';
@@ -38,6 +39,7 @@ export async function initializeDatabase(): Promise<Repositories> {
 export async function prepareDatabase(
   database: SqlDatabase,
   currentTime: () => string = () => new Date().toISOString(),
+  orderedCaseIds: readonly string[] = caseCatalog.map((item) => item.id),
 ): Promise<Repositories> {
   await runMigrations(database);
   const preparedRepositories = createRepositories(database);
@@ -52,6 +54,7 @@ export async function prepareDatabase(
       updatedAt: currentTime(),
     });
   }
+  await preparedRepositories.progress.unlockAfterCompleted(orderedCaseIds, currentTime());
   return preparedRepositories;
 }
 

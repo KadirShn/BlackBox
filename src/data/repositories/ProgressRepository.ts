@@ -87,4 +87,26 @@ export class ProgressRepository {
       }
     });
   }
+
+  // Cases added in an update unlock for players who already finished the case before them.
+  public async unlockAfterCompleted(orderedCaseIds: readonly string[], now: string): Promise<void> {
+    const progress = new Map((await this.list()).map((item) => [item.caseId, item]));
+    for (let index = 1; index < orderedCaseIds.length; index += 1) {
+      const previousId = orderedCaseIds[index - 1];
+      const caseId = orderedCaseIds[index];
+      if (previousId === undefined || caseId === undefined) continue;
+      const current = progress.get(caseId);
+      if (progress.get(previousId)?.status !== 'completed') continue;
+      if (current !== undefined && current.status !== 'locked') continue;
+      await this.save({
+        caseId,
+        status: 'available',
+        bestStars: current?.bestStars ?? 0,
+        attempts: current?.attempts ?? 0,
+        hintsUsedBest: current?.hintsUsedBest ?? null,
+        completedAt: null,
+        updatedAt: now,
+      });
+    }
+  }
 }

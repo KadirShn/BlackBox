@@ -5,6 +5,7 @@ const always = { type: 'always' } as const;
 export const silentStationCase: CaseDefinition = {
   id: 'case-silent-station',
   schemaVersion: 1,
+  chapter: 1,
   titleKey: 'cases.station.title',
   summaryKey: 'cases.station.summary',
   briefingKey: 'cases.station.briefing',
@@ -25,7 +26,13 @@ export const silentStationCase: CaseDefinition = {
       type: 'image',
       titleKey: 'cases.station.evidence.camera.title',
       descriptionKey: 'cases.station.evidence.camera.description',
-      content: { kind: 'text', bodyKey: 'cases.station.evidence.camera.body' },
+      content: {
+        kind: 'camera_frame',
+        camera: 'C-12 · P4',
+        time: '18:13:04',
+        sceneKey: 'cases.station.evidence.camera.scene',
+        bodyKey: 'cases.station.evidence.camera.body',
+      },
       unlockCondition: always,
       tags: ['camera'],
     },

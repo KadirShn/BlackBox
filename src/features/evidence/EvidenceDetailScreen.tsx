@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 import { AppText as Text } from '@/components/AppText';
+import { CameraFrame } from '@/components/CameraFrame';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { ScreenFrame } from '@/components/ScreenFrame';
 import { ErrorState } from '@/components/StateViews';
@@ -55,7 +56,17 @@ export function EvidenceDetailScreen({
       <Text accessibilityRole="header" style={styles.title}>
         {translateCase(evidence.titleKey, language)}
       </Text>
+      {evidence.content.kind === 'camera_frame' ? (
+        <CameraFrame
+          camera={evidence.content.camera}
+          scene={translateCase(evidence.content.sceneKey, language)}
+          time={evidence.content.time}
+        />
+      ) : null}
       <View style={styles.document}>
+        {evidence.content.kind === 'camera_frame' ? (
+          <Text style={styles.time}>{translate('evidence.camera.scene', language)}</Text>
+        ) : null}
         {evidence.content.kind === 'timeline_item' ? (
           <Text selectable style={styles.time}>
             {evidence.content.time}

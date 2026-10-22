@@ -1,3 +1,7 @@
+import {
+  chapterTwoTranslationsEn,
+  chapterTwoTranslationsTr,
+} from '@/content/locales/chapterTwoTranslations';
 import type { Language } from '@/content/locales/translations';
 import {
   remainingCaseTranslationsEn,
@@ -6,6 +10,7 @@ import {
 
 const tr: Record<string, string> = {
   ...remainingCaseTranslationsTr,
+  ...chapterTwoTranslationsTr,
   'cases.tutorial.title': 'Kayıp 11 Dakika',
   'cases.tutorial.summary': 'Bir teslimat dronunun kayıp kayıt aralığını incele.',
   'cases.tutorial.briefing':
@@ -88,6 +93,7 @@ const tr: Record<string, string> = {
 
 const en: Record<string, string> = {
   ...remainingCaseTranslationsEn,
+  ...chapterTwoTranslationsEn,
   'cases.tutorial.title': 'The Missing 11 Minutes',
   'cases.tutorial.summary': 'Investigate a missing interval in a delivery drone log.',
   'cases.tutorial.briefing':

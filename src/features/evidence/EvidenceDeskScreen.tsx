@@ -11,6 +11,7 @@ import { getCaseById } from '@/content/cases/catalog';
 import { translateCase } from '@/content/locales/caseTranslations';
 import { translate, type TranslationKey } from '@/content/locales/translations';
 import type { CaseDefinition } from '@/domain/case/caseSchema';
+import { getUnlockState } from '@/engine/session/unlocks';
 import { useActiveSession } from '@/features/session/useActiveSession';
 import { useSessionStore } from '@/stores/useSessionStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
@@ -57,6 +58,7 @@ export function EvidenceDeskScreen({ caseId }: { caseId: string }) {
   const solvedCount = Object.values(session.puzzleStates).filter(
     (item) => item.status === 'solved',
   ).length;
+  const unlocked = getUnlockState(definition, session);
   const reportReady = definition.solution.requiredPuzzleIds.every(
     (id) => session.puzzleStates[id]?.status === 'solved',
   );
@@ -79,29 +81,62 @@ export function EvidenceDeskScreen({ caseId }: { caseId: string }) {
       ) : null}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{translate('evidence.section', language)}</Text>
-        {definition.evidence.map((evidence) => (
-          <EvidenceCard
-            description={translateCase(evidence.descriptionKey, language)}
-            key={evidence.id}
-            onPress={() => {
-              openEvidence(evidence.id);
-              router.push({
-                pathname: '/cases/[caseId]/evidence/[evidenceId]',
-                params: { caseId, evidenceId: evidence.id },
-              });
-            }}
-            opened={session.openedEvidenceIds.includes(evidence.id)}
-            title={translateCase(evidence.titleKey, language)}
-            typeLabel={translate(evidenceTypeKeys[evidence.type], language)}
-          />
-        ))}
+        {definition.evidence.map((evidence) => {
+          const opened = session.openedEvidenceIds.includes(evidence.id);
+          const locked = !unlocked.evidenceIds.has(evidence.id);
+          return (
+            <EvidenceCard
+              description={
+                locked
+                  ? translate('evidence.locked.description', language)
+                  : translateCase(evidence.descriptionKey, language)
+              }
+              key={evidence.id}
+              locked={locked}
+              onPress={() => {
+                openEvidence(evidence.id);
+                router.push({
+                  pathname: '/cases/[caseId]/evidence/[evidenceId]',
+                  params: { caseId, evidenceId: evidence.id },
+                });
+              }}
+              opened={opened}
+              stateLabel={translate(
+                locked
+                  ? 'evidence.state.locked'
+                  : opened
+                    ? 'evidence.state.opened'
+                    : 'evidence.state.new',
+                language,
+              )}
+              title={
+                locked
+                  ? translate('evidence.locked.title', language)
+                  : translateCase(evidence.titleKey, language)
+              }
+              typeLabel={translate(evidenceTypeKeys[evidence.type], language)}
+            />
+          );
+        })}
       </View>
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{translate('evidence.puzzles', language)}</Text>
         {definition.puzzles.map((puzzle) => (
           <PrimaryButton
+            accessibilityHint={
+              unlocked.puzzleIds.has(puzzle.id)
+                ? undefined
+                : translate('puzzle.lockedMessage', language)
+            }
+            disabled={!unlocked.puzzleIds.has(puzzle.id)}
             key={puzzle.id}
-            label={`${session.puzzleStates[puzzle.id]?.status === 'solved' ? '✓ ' : ''}${translateCase(puzzle.titleKey, language)}`}
+            label={`${
+              !unlocked.puzzleIds.has(puzzle.id)
+                ? '◆ '
+                : session.puzzleStates[puzzle.id]?.status === 'solved'
+                  ? '✓ '
+                  : ''
+            }${translateCase(puzzle.titleKey, language)}`}
             onPress={() =>
               router.push({
                 pathname: '/cases/[caseId]/puzzle/[puzzleId]',

@@ -5,6 +5,7 @@ const always = { type: 'always' } as const;
 export const nightRouteCase = {
   id: 'case-night-route',
   schemaVersion: 1,
+  chapter: 1,
   titleKey: 'cases.night.title',
   summaryKey: 'cases.night.summary',
   briefingKey: 'cases.night.briefing',
@@ -173,6 +174,7 @@ export const nightRouteCase = {
     correctHypothesisId: 'authorized-intervention',
     requiredEvidenceIds: ['access-audit', 'route-log'],
     requiredPuzzleIds: ['night-timeline', 'night-logs'],
+    misleadingEvidenceIds: ['gps-alert'],
     explanationKey: 'cases.night.solution',
   },
   scoring: { maxHintsForThreeStars: 1, maxHintsForTwoStars: 3 },

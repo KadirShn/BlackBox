@@ -13,7 +13,7 @@ type PrimaryButtonProps = {
   disabled?: boolean;
   loading?: boolean;
   leading?: ReactNode;
-  accessibilityHint?: string;
+  accessibilityHint?: string | undefined;
   variant?: 'primary' | 'secondary';
 };
 

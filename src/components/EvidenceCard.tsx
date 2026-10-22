@@ -8,8 +8,10 @@ type EvidenceCardProps = {
   title: string;
   description: string;
   typeLabel: string;
+  stateLabel: string;
   opened: boolean;
   selected?: boolean;
+  locked?: boolean;
   onPress: () => void;
 };
 
@@ -17,29 +19,39 @@ export function EvidenceCard({
   title,
   description,
   typeLabel,
+  stateLabel,
   opened,
   selected = false,
+  locked = false,
   onPress,
 }: EvidenceCardProps) {
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityState={{ selected }}
+      accessibilityState={{ selected, disabled: locked }}
+      disabled={locked}
       onPress={onPress}
-      style={({ pressed }) => [styles.card, selected && styles.selected, pressed && styles.pressed]}
+      style={({ pressed }) => [
+        styles.card,
+        selected && styles.selected,
+        pressed && styles.pressed,
+        locked && styles.locked,
+      ]}
     >
-      <View style={styles.glyph}>
-        <Text style={styles.glyphText}>{opened ? '◉' : '◎'}</Text>
+      <View style={[styles.glyph, locked && styles.glyphLocked]}>
+        <Text style={[styles.glyphText, locked && styles.glyphTextLocked]}>
+          {locked ? '◆' : opened ? '◉' : '◎'}
+        </Text>
       </View>
       <View style={styles.body}>
         <View style={styles.header}>
           <Text style={styles.type}>{typeLabel}</Text>
-          <Text style={styles.state}>{opened ? '✓ İncelendi' : '○ Yeni'}</Text>
+          <Text style={styles.state}>{stateLabel}</Text>
         </View>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.description}>{description}</Text>
       </View>
-      <View style={styles.notch} />
+      {locked ? null : <View style={styles.notch} />}
     </Pressable>
   );
 }
@@ -58,6 +70,7 @@ const styles = StyleSheet.create({
   },
   selected: { borderColor: colors.accent.primary, backgroundColor: colors.evidence.selected },
   pressed: { opacity: 0.82 },
+  locked: { opacity: 0.6, borderStyle: 'dashed' },
   glyph: {
     width: 52,
     height: 52,
@@ -68,7 +81,9 @@ const styles = StyleSheet.create({
     borderRadius: 26,
     backgroundColor: colors.accent.muted,
   },
+  glyphLocked: { borderColor: colors.status.locked, backgroundColor: 'transparent' },
   glyphText: { ...typography.sectionTitle, color: colors.accent.primary },
+  glyphTextLocked: { color: colors.status.locked },
   body: { flex: 1, gap: spacing.sm },
   notch: {
     position: 'absolute',

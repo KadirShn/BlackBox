@@ -1,5 +1,8 @@
 import { caseSchema, type CaseDefinition } from '@/domain/case/caseSchema';
 import { blackBoxCase } from '@/content/cases/black-box';
+import { coldChainCase } from '@/content/cases/cold-chain';
+import { ghostSignalCase } from '@/content/cases/ghost-signal';
+import { lastSignatureCase } from '@/content/cases/last-signature';
 import { nightRouteCase } from '@/content/cases/night-route';
 import { silentStationCase } from '@/content/cases/silent-station';
 import { tutorialCase } from '@/content/cases/tutorial';
@@ -11,6 +14,9 @@ const rawCases: readonly unknown[] = [
   silentStationCase,
   wrongGuestCase,
   blackBoxCase,
+  coldChainCase,
+  ghostSignalCase,
+  lastSignatureCase,
 ];
 
 export type CaseCatalogIssue = {

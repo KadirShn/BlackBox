@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
@@ -113,22 +113,29 @@ export function CaseListScreen() {
                 ? 'case.status.locked'
                 : 'case.status.available';
         const difficultyKey = `case.difficulty.${definition.difficulty}` as const;
+        const startsChapter = caseCatalog[index - 1]?.chapter !== definition.chapter;
 
         return (
-          <CaseCard
-            difficulty={translate(difficultyKey, language)}
-            estimatedMinutes={definition.estimatedMinutes}
-            key={definition.id}
-            numberLabel={`${translate('case.file', language)} / ${String(index).padStart(2, '0')}`}
-            onPress={() =>
-              router.push({ pathname: '/cases/[caseId]', params: { caseId: definition.id } })
-            }
-            stars={progress?.bestStars ?? 0}
-            status={visualStatus}
-            statusLabel={translate(statusKey, language)}
-            summary={translateCase(definition.summaryKey, language)}
-            title={translateCase(definition.titleKey, language)}
-          />
+          <Fragment key={definition.id}>
+            {startsChapter ? (
+              <Text accessibilityRole="header" style={styles.chapter}>
+                {translate(definition.chapter === 1 ? 'chapter.1' : 'chapter.2', language)}
+              </Text>
+            ) : null}
+            <CaseCard
+              difficulty={translate(difficultyKey, language)}
+              estimatedMinutes={definition.estimatedMinutes}
+              numberLabel={`${translate('case.file', language)} / ${String(index).padStart(2, '0')}`}
+              onPress={() =>
+                router.push({ pathname: '/cases/[caseId]', params: { caseId: definition.id } })
+              }
+              stars={progress?.bestStars ?? 0}
+              status={visualStatus}
+              statusLabel={translate(statusKey, language)}
+              summary={translateCase(definition.summaryKey, language)}
+              title={translateCase(definition.titleKey, language)}
+            />
+          </Fragment>
         );
       })}
     </ScrollView>
@@ -147,4 +154,10 @@ const styles = StyleSheet.create({
   heading: { gap: spacing.sm, paddingBottom: spacing.sm },
   title: { ...typography.screenTitle, color: colors.text.primary },
   subtitle: { ...typography.body, color: colors.text.secondary },
+  chapter: {
+    ...typography.caption,
+    paddingTop: spacing.md,
+    color: colors.accent.secondary,
+    letterSpacing: 1.5,
+  },
 });

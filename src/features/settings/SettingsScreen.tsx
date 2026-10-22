@@ -96,6 +96,14 @@ export function SettingsScreen() {
           value={settings.soundEffectsEnabled}
         />
       </View>
+      <View style={styles.switchRow}>
+        <Text style={styles.sectionTitle}>{t('settings.music')}</Text>
+        <Switch
+          accessibilityLabel={t('settings.music')}
+          onValueChange={settings.setMusicEnabled}
+          value={settings.musicEnabled}
+        />
+      </View>
       <View style={styles.section}>
         <PrimaryButton
           label={t('settings.privacy')}

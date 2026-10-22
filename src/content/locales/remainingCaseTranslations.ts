@@ -9,6 +9,8 @@ export const remainingCaseTranslationsTr: Record<string, string> = {
     '18:14’te tüm P-4 sensörleri aynı anda veri göndermeyi bıraktı.',
   'cases.station.evidence.camera.title': 'Kamera Döngüsü',
   'cases.station.evidence.camera.description': 'C-12 akışındaki yinelenen kareler.',
+  'cases.station.evidence.camera.scene':
+    'Peron bomboş. Saat göstergesi ilerliyor, ama bank önündeki gazete sayfası hiç kıpırdamıyor.',
   'cases.station.evidence.camera.body':
     '18:12–18:15 arasında aynı 8 saniyelik görüntü üç kez tekrarlandı.',
   'cases.station.evidence.report.title': 'Peron Görevlisi Raporu',
@@ -196,6 +198,8 @@ export const remainingCaseTranslationsEn: Record<string, string> = {
   'cases.station.evidence.sensor.body': 'At 18:14, every P-4 sensor stopped reporting at once.',
   'cases.station.evidence.camera.title': 'Camera Loop',
   'cases.station.evidence.camera.description': 'Repeated frames in the C-12 stream.',
+  'cases.station.evidence.camera.scene':
+    'The platform is empty. The clock overlay advances, yet the newspaper by the bench never moves.',
   'cases.station.evidence.camera.body':
     'The same eight seconds repeated three times between 18:12 and 18:15.',
   'cases.station.evidence.report.title': 'Platform Report',

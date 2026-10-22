@@ -52,7 +52,20 @@ function puzzleTranslationKeys(puzzle: PuzzleDefinition): string[] {
       ...puzzle.sourceA.segments.map((segment) => segment.textKey),
       ...puzzle.sourceB.segments.map((segment) => segment.textKey),
     ];
+  if (puzzle.type === 'code_entry') return [...base, puzzle.promptKey];
   return base;
+}
+
+function evidenceTranslationKeys(evidence: CaseDefinition['evidence'][number]): string[] {
+  const base = [evidence.titleKey, evidence.descriptionKey];
+  switch (evidence.content.kind) {
+    case 'log':
+      return base;
+    case 'camera_frame':
+      return [...base, evidence.content.sceneKey, evidence.content.bodyKey];
+    default:
+      return [...base, evidence.content.bodyKey];
+  }
 }
 
 export function validateCaseContent(
@@ -76,6 +89,11 @@ export function validateCaseContent(
     if (!evidenceIds.has(id)) issues.push(`missing solution evidence:${id}`);
   for (const id of definition.solution.requiredPuzzleIds)
     if (!puzzleIds.has(id)) issues.push(`missing solution puzzle:${id}`);
+  for (const id of definition.solution.misleadingEvidenceIds ?? []) {
+    if (!evidenceIds.has(id)) issues.push(`missing misleading evidence:${id}`);
+    if (definition.solution.requiredEvidenceIds.includes(id))
+      issues.push(`evidence both required and misleading:${id}`);
+  }
 
   for (const item of [...definition.evidence, ...definition.puzzles]) {
     const refs = conditionReferences(item.unlockCondition);
@@ -86,6 +104,16 @@ export function validateCaseContent(
   }
 
   for (const puzzle of definition.puzzles) {
+    if (puzzle.type === 'timeline') {
+      for (const id of puzzle.itemIds) {
+        const evidence = definition.evidence.find((item) => item.id === id);
+        if (evidence?.content.kind !== 'timeline_item') issues.push(`invalid timeline item:${id}`);
+      }
+    }
+    if (puzzle.type === 'connection_board') {
+      for (const id of puzzle.nodeIds)
+        if (!evidenceIds.has(id)) issues.push(`invalid connection node:${id}`);
+    }
     if (puzzle.type === 'log_analyzer') {
       const rowIds = new Set(puzzle.rows.map((row) => row.id));
       for (const id of puzzle.requiredRowIds)
@@ -117,13 +145,7 @@ export function validateCaseContent(
     definition.summaryKey,
     definition.briefingKey,
     definition.solution.explanationKey,
-    ...definition.evidence
-      .flatMap((item) => [
-        item.titleKey,
-        item.descriptionKey,
-        item.content.kind === 'log' ? [] : item.content.bodyKey,
-      ])
-      .flat(),
+    ...definition.evidence.flatMap(evidenceTranslationKeys),
     ...definition.hypotheses.flatMap((item) => [item.labelKey, item.explanationKey]),
     ...definition.puzzles.flatMap(puzzleTranslationKeys),
   ];

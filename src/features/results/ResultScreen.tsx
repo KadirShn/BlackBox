@@ -11,7 +11,17 @@ import { translate } from '@/content/locales/translations';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { colors, radii, spacing, typography } from '@/theme/tokens';
 
-export function ResultScreen({ caseId, stars }: { caseId: string; stars: 1 | 2 | 3 }) {
+export function ResultScreen({
+  caseId,
+  stars,
+  hintsUsed = null,
+  reportMistakes = null,
+}: {
+  caseId: string;
+  stars: 1 | 2 | 3;
+  hintsUsed?: number | null;
+  reportMistakes?: number | null;
+}) {
   const router = useRouter();
   const language = useSettingsStore((state) => state.language);
   const definition = getCaseById(caseId);
@@ -39,6 +49,19 @@ export function ResultScreen({ caseId, stars }: { caseId: string; stars: 1 | 2 |
       <Text accessibilityRole="header" style={styles.title}>
         {translateCase(definition.titleKey, language)}
       </Text>
+      {hintsUsed !== null && reportMistakes !== null ? (
+        <View style={styles.breakdown}>
+          <View style={styles.breakdownItem}>
+            <Text style={styles.breakdownValue}>{hintsUsed}</Text>
+            <Text style={styles.breakdownLabel}>{translate('result.hints', language)}</Text>
+          </View>
+          <View style={styles.breakdownDivider} />
+          <View style={styles.breakdownItem}>
+            <Text style={styles.breakdownValue}>{reportMistakes}</Text>
+            <Text style={styles.breakdownLabel}>{translate('result.mistakes', language)}</Text>
+          </View>
+        </View>
+      ) : null}
       <View style={styles.explanation}>
         <Text style={styles.body}>
           {translateCase(definition.solution.explanationKey, language)}
@@ -69,6 +92,17 @@ const styles = StyleSheet.create({
   },
   stars: { color: colors.status.warning, fontSize: 42, letterSpacing: 8, textAlign: 'center' },
   title: { ...typography.screenTitle, color: colors.text.primary, textAlign: 'center' },
+  breakdown: {
+    flexDirection: 'row',
+    padding: spacing.lg,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: colors.border.subtle,
+  },
+  breakdownItem: { flex: 1, alignItems: 'center', gap: spacing.xs },
+  breakdownDivider: { width: 1, backgroundColor: colors.border.subtle },
+  breakdownValue: { ...typography.sectionTitle, color: colors.text.primary },
+  breakdownLabel: { ...typography.caption, color: colors.text.secondary, textAlign: 'center' },
   explanation: {
     padding: spacing.xl,
     borderRadius: radii.md,

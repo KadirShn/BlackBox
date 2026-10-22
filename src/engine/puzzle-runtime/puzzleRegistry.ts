@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import type {
+  CodeEntryPuzzleDefinition,
   Connection,
   ConnectionBoardPuzzleDefinition,
   ContradictionPuzzleDefinition,
@@ -58,6 +59,14 @@ export function evaluateConnectionBoard(
   return submitted.size === required.size && [...required].every((key) => submitted.has(key));
 }
 
+export function normalizeCode(value: string): string {
+  return value.toUpperCase().replace(/[\s\-:._/]/g, '');
+}
+
+export function evaluateCodeEntry(definition: CodeEntryPuzzleDefinition, answer: string): boolean {
+  return normalizeCode(answer) === normalizeCode(definition.answer);
+}
+
 type PuzzleAdapter = {
   restore: (definition: PuzzleDefinition, value: unknown) => unknown;
   evaluate: (definition: PuzzleDefinition, value: unknown) => boolean;
@@ -113,6 +122,14 @@ export const puzzleRegistry: Record<PuzzleDefinition['type'], PuzzleAdapter> = {
       );
     },
     serialize: (value) => connectionAnswerSchema.parse(value),
+  },
+  code_entry: {
+    restore: (_, value) => (typeof value === 'string' ? value : ''),
+    evaluate: (definition, value) =>
+      definition.type === 'code_entry' &&
+      typeof value === 'string' &&
+      evaluateCodeEntry(definition, value),
+    serialize: (value) => (typeof value === 'string' ? value : ''),
   },
 };
 

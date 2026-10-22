@@ -29,6 +29,7 @@ export function ScreenFrame({ children }: { children: ReactNode }) {
     <Animated.ScrollView
       contentContainerStyle={styles.content}
       contentInsetAdjustmentBehavior="automatic"
+      keyboardShouldPersistTaps="handled"
       style={{ opacity }}
     >
       {children}

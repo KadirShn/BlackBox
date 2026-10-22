@@ -3,6 +3,7 @@ import type { CaseDefinition } from '@/domain/case/caseSchema';
 export const tutorialCase = {
   id: 'tutorial-missing-eleven',
   schemaVersion: 1,
+  chapter: 1,
   titleKey: 'cases.tutorial.title',
   summaryKey: 'cases.tutorial.summary',
   briefingKey: 'cases.tutorial.briefing',

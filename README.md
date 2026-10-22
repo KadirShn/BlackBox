@@ -15,8 +15,12 @@ Black Box: Incident Investigator, dijital delilleri inceleyerek olayları çözm
 
 ## Özellikler
 
-- Bir tutorial ve dört ana vaka
-- Timeline, log analizi, çelişki ve bağlantı puzzle'ları
+- İki dosyaya yayılan bir tutorial ve yedi ana vaka
+- Timeline, log analizi, çelişki, bağlantı ve kod çözme puzzle'ları
+- Analiz ilerledikçe açılan şifreli deliller ve kamera kareleri
+- Kademeli rapor geri bildirimi; yanıltıcı delil ve reddedilen rapor cezası
+- Yıldızlarla yükselen müfettiş rütbesi ve on bir başarım
+- Prosedürel ambiyans müziği
 - Veri odaklı ve çalışma zamanında doğrulanan vaka içerikleri
 - Çevrimdışı oynanış ve SQLite tabanlı yerel kayıt sistemi
 - Türkçe ve İngilizce dil desteği

@@ -131,6 +131,26 @@ describe('SQLite migrations and repositories', () => {
     });
   });
 
+  it('unlocks cases added by an update for players who finished the previous case', async () => {
+    const database = new NodeSqlDatabase();
+    const updatedAt = '2026-10-22T00:00:00.000Z';
+    const repositories = await prepareDatabase(database, () => updatedAt, ['a', 'b']);
+    await repositories.progress.save({
+      caseId: 'a',
+      status: 'completed',
+      bestStars: 3,
+      attempts: 1,
+      hintsUsedBest: 0,
+      completedAt: updatedAt,
+      updatedAt,
+    });
+
+    await prepareDatabase(database, () => updatedAt, ['a', 'b', 'c']);
+
+    await expect(repositories.progress.get('b')).resolves.toMatchObject({ status: 'available' });
+    await expect(repositories.progress.get('c')).resolves.toBeNull();
+  });
+
   it('upgrades schema version 1 settings without losing the existing values', async () => {
     const database = new NodeSqlDatabase();
     const firstMigration = migrations[0];

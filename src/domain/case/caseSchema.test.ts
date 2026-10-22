@@ -21,6 +21,7 @@ describe('case schemas', () => {
     const result = caseSchema.safeParse({
       id: 'case',
       schemaVersion: 1,
+      chapter: 1,
       titleKey: 'title',
       summaryKey: 'summary',
       briefingKey: 'briefing',

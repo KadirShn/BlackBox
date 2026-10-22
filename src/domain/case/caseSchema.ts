@@ -86,6 +86,18 @@ const contradictionPuzzleSchema = z.object({
   hints: z.array(hintSchema).max(3),
 });
 
+const codeEntryPuzzleSchema = z.object({
+  id: z.string().min(1),
+  type: z.literal('code_entry'),
+  titleKey: z.string().min(1),
+  instructionsKey: z.string().min(1),
+  promptKey: z.string().min(1),
+  answer: z.string().min(1).max(24),
+  inputMode: z.enum(['numeric', 'text']),
+  unlockCondition: unlockConditionSchema,
+  hints: z.array(hintSchema).max(3),
+});
+
 export const connectionTypeSchema = z.enum(['supports', 'contradicts', 'causes']);
 
 const connectionSchema = z.object({
@@ -111,6 +123,7 @@ export const puzzleSchema = z.discriminatedUnion('type', [
   logAnalyzerPuzzleSchema,
   contradictionPuzzleSchema,
   connectionBoardPuzzleSchema,
+  codeEntryPuzzleSchema,
 ]);
 
 const evidenceContentSchema = z.discriminatedUnion('kind', [
@@ -121,6 +134,13 @@ const evidenceContentSchema = z.discriminatedUnion('kind', [
     bodyKey: z.string().min(1),
   }),
   z.object({ kind: z.literal('log'), rowIds: z.array(z.string().min(1)).min(1) }),
+  z.object({
+    kind: z.literal('camera_frame'),
+    camera: z.string().min(1),
+    time: z.string().min(1),
+    sceneKey: z.string().min(1),
+    bodyKey: z.string().min(1),
+  }),
 ]);
 
 const evidenceSchema = z.object({
@@ -142,6 +162,7 @@ const hypothesisSchema = z.object({
 export const caseSchema = z.object({
   id: z.string().min(1),
   schemaVersion: z.number().int().positive(),
+  chapter: z.number().int().min(1),
   titleKey: z.string().min(1),
   summaryKey: z.string().min(1),
   briefingKey: z.string().min(1),
@@ -154,6 +175,7 @@ export const caseSchema = z.object({
     correctHypothesisId: z.string().min(1),
     requiredEvidenceIds: z.array(z.string().min(1)),
     requiredPuzzleIds: z.array(z.string().min(1)),
+    misleadingEvidenceIds: z.array(z.string().min(1)).optional(),
     explanationKey: z.string().min(1),
   }),
   scoring: z.object({
@@ -168,5 +190,7 @@ export type TimelinePuzzleDefinition = z.infer<typeof timelinePuzzleSchema>;
 export type LogAnalyzerPuzzleDefinition = z.infer<typeof logAnalyzerPuzzleSchema>;
 export type ContradictionPuzzleDefinition = z.infer<typeof contradictionPuzzleSchema>;
 export type ConnectionBoardPuzzleDefinition = z.infer<typeof connectionBoardPuzzleSchema>;
+export type CodeEntryPuzzleDefinition = z.infer<typeof codeEntryPuzzleSchema>;
+export type EvidenceDefinition = z.infer<typeof evidenceSchema>;
 export type Connection = z.infer<typeof connectionSchema>;
 export type ConnectionType = z.infer<typeof connectionTypeSchema>;

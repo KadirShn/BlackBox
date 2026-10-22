@@ -7,11 +7,15 @@ import { EvidenceCard } from '@/components/EvidenceCard';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { ScreenFrame } from '@/components/ScreenFrame';
 import { ErrorState, LoadingState } from '@/components/StateViews';
-import { getCaseById, getNextCaseId } from '@/content/cases/catalog';
+import { caseCatalog, getCaseById, getNextCaseId } from '@/content/cases/catalog';
 import { translateCase } from '@/content/locales/caseTranslations';
-import { translate } from '@/content/locales/translations';
+import { translate, type TranslationKey } from '@/content/locales/translations';
 import { getRepositories } from '@/data/database/initializeDatabase';
-import { evaluateReport } from '@/engine/scoring/scoringEngine';
+import {
+  countsAsReportMistake,
+  evaluateReport,
+  type ReportRejection,
+} from '@/engine/scoring/scoringEngine';
 import { evaluateAchievements } from '@/engine/achievements/evaluateAchievements';
 import { useActiveSession } from '@/features/session/useActiveSession';
 import { logger } from '@/services/logger/logger';
@@ -20,6 +24,13 @@ import { playUiSound } from '@/services/audio/audioService';
 import { useSessionStore } from '@/stores/useSessionStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { colors, layout, radii, spacing, typography } from '@/theme/tokens';
+
+const rejectionKeys: Record<ReportRejection, TranslationKey> = {
+  missing_puzzles: 'report.incorrect.puzzles',
+  hypothesis: 'report.incorrect.hypothesis',
+  misleading_evidence: 'report.incorrect.misleading',
+  missing_evidence: 'report.incorrect.missing',
+};
 
 export function ReportScreen({ caseId }: { caseId: string }) {
   const router = useRouter();
@@ -78,8 +89,13 @@ export function ReportScreen({ caseId }: { caseId: string }) {
       reportMistakes: activeSession.reportMistakes,
     });
     if (!evaluation.correct) {
-      recordReportMistake();
-      setFeedback(translate('report.incorrect', language));
+      if (countsAsReportMistake(evaluation.reason)) recordReportMistake();
+      setFeedback(
+        translate(rejectionKeys[evaluation.reason], language).replace(
+          '{count}',
+          String(evaluation.missingEvidenceIds.length),
+        ),
+      );
       void playFeedbackHaptic(hapticsEnabled, 'warning');
       void playUiSound('warning', soundEffectsEnabled);
       return;
@@ -107,6 +123,7 @@ export function ReportScreen({ caseId }: { caseId: string }) {
       const progress = await repositories.progress.list();
       await repositories.achievements.unlock(
         evaluateAchievements({
+          catalog: caseCatalog,
           definition: caseDefinition,
           session: activeSession,
           progress,
@@ -120,7 +137,12 @@ export function ReportScreen({ caseId }: { caseId: string }) {
       await repositories.sessions.delete(caseId);
       router.replace({
         pathname: '/cases/[caseId]/result',
-        params: { caseId, stars: String(evaluation.stars) },
+        params: {
+          caseId,
+          stars: String(evaluation.stars),
+          hints: String(activeSession.hintsUsed),
+          mistakes: String(activeSession.reportMistakes),
+        },
       });
     } catch (caught: unknown) {
       logger.warn('Report submission persistence failed', {
@@ -168,11 +190,20 @@ export function ReportScreen({ caseId }: { caseId: string }) {
               onPress={() => toggleEvidence(evidence.id)}
               opened
               selected={session.selectedEvidenceIds.includes(evidence.id)}
+              stateLabel={translate('evidence.state.opened', language)}
               title={translateCase(evidence.titleKey, language)}
               typeLabel={translate('report.evidenceType', language)}
             />
           ))}
       </View>
+      {session.reportMistakes > 0 ? (
+        <Text style={styles.mistakes}>
+          {translate('report.mistakes', language).replace(
+            '{count}',
+            String(session.reportMistakes),
+          )}
+        </Text>
+      ) : null}
       {feedback !== null ? (
         <Text accessibilityLiveRegion="assertive" style={styles.feedback}>
           {feedback}
@@ -204,4 +235,5 @@ const styles = StyleSheet.create({
   hypothesisBody: { ...typography.caption, color: colors.text.secondary },
   evidenceList: { gap: spacing.md },
   feedback: { ...typography.body, color: colors.status.danger },
+  mistakes: { ...typography.caption, color: colors.status.warning },
 });

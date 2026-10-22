@@ -5,6 +5,7 @@ const always = { type: 'always' } as const;
 export const wrongGuestCase: CaseDefinition = {
   id: 'case-wrong-guest',
   schemaVersion: 1,
+  chapter: 1,
   titleKey: 'cases.guest.title',
   summaryKey: 'cases.guest.summary',
   briefingKey: 'cases.guest.briefing',

@@ -5,6 +5,7 @@ const always = { type: 'always' } as const;
 export const blackBoxCase: CaseDefinition = {
   id: 'case-black-box',
   schemaVersion: 1,
+  chapter: 1,
   titleKey: 'cases.blackbox.title',
   summaryKey: 'cases.blackbox.summary',
   briefingKey: 'cases.blackbox.briefing',
@@ -304,6 +305,7 @@ export const blackBoxCase: CaseDefinition = {
       'blackbox-contradiction',
       'blackbox-connections',
     ],
+    misleadingEvidenceIds: ['operator-note'],
     explanationKey: 'cases.blackbox.solution',
   },
   scoring: { maxHintsForThreeStars: 1, maxHintsForTwoStars: 5 },
