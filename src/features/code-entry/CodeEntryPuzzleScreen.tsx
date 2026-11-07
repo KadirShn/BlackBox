@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { Keyboard, StyleSheet, TextInput, View } from 'react-native';
 
 import { AppText as Text } from '@/components/AppText';
 import { PrimaryButton } from '@/components/PrimaryButton';
@@ -51,6 +51,8 @@ export function CodeEntryPuzzleScreen({ caseId, puzzleId }: { caseId: string; pu
 
   function submit(): void {
     if (code.trim().length === 0) return;
+    // The verdict renders under the input; the keyboard would otherwise cover it.
+    Keyboard.dismiss();
     const correct = evaluatePuzzle(codePuzzle, code);
     saveAnswer(codePuzzle.id, code, correct || solved);
     setFeedback(correct ? 'solved' : 'wrong');
@@ -58,7 +60,7 @@ export function CodeEntryPuzzleScreen({ caseId, puzzleId }: { caseId: string; pu
   }
 
   return (
-    <ScreenFrame>
+    <ScreenFrame scrollToEndOn={session.puzzleStates[puzzleId]?.attempts ?? 0}>
       <Text accessibilityRole="header" style={styles.title}>
         {translateCase(puzzle.titleKey, language)}
       </Text>

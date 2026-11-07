@@ -35,6 +35,9 @@ function TimelinePuzzleContent({
   const hapticsEnabled = useSettingsStore((state) => state.hapticsEnabled);
   const soundEffectsEnabled = useSettingsStore((state) => state.soundEffectsEnabled);
   const setPuzzleAnswer = useSessionStore((state) => state.setPuzzleAnswer);
+  const attempts = useSessionStore(
+    (state) => state.session?.puzzleStates[puzzle.id]?.attempts ?? 0,
+  );
   const [order, setOrder] = useState(() => restoreTimelineAnswer(puzzle, savedAnswer));
   const [feedback, setFeedback] = useState<'idle' | 'wrong' | 'solved'>('idle');
   const items = order.flatMap<TimelineDisplayItem>((id) => {
@@ -73,7 +76,7 @@ function TimelinePuzzleContent({
   }
 
   return (
-    <ScreenFrame>
+    <ScreenFrame scrollToEndOn={attempts}>
       <Text accessibilityRole="header" style={styles.title}>
         {translateCase(puzzle.titleKey, language)}
       </Text>
@@ -87,6 +90,8 @@ function TimelinePuzzleContent({
       <TimelinePuzzle
         items={items}
         onMove={move}
+        moveDownLabel={translate('timeline.moveDown', language)}
+        moveUpLabel={translate('timeline.moveUp', language)}
         onSubmit={submit}
         submitLabel={translate('timeline.check', language)}
       />
@@ -102,7 +107,7 @@ function TimelinePuzzleContent({
           </Text>
           <PrimaryButton
             label={translate('puzzle.returnDesk', language)}
-            onPress={() => router.replace({ pathname: '/cases/[caseId]/desk', params: { caseId } })}
+            onPress={() => router.back()}
           />
         </>
       ) : null}

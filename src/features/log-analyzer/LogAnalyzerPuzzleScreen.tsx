@@ -68,7 +68,7 @@ export function LogAnalyzerPuzzleScreen({
   }
 
   return (
-    <ScreenFrame>
+    <ScreenFrame scrollToEndOn={session.puzzleStates[puzzleId]?.attempts ?? 0}>
       <Text accessibilityRole="header" style={styles.title}>
         {translateCase(puzzle.titleKey, language)}
       </Text>
@@ -121,10 +121,20 @@ export function LogAnalyzerPuzzleScreen({
       />
       <PrimaryButton label={translate('log.check', language)} onPress={submit} />
       {feedback === 'wrong' ? (
-        <Text style={styles.error}>{translate('log.wrong', language)}</Text>
+        <Text accessibilityLiveRegion="assertive" style={styles.error}>
+          {translate('log.wrong', language)}
+        </Text>
       ) : null}
       {feedback === 'solved' ? (
-        <Text style={styles.success}>{translate('log.solved', language)}</Text>
+        <>
+          <Text accessibilityLiveRegion="polite" style={styles.success}>
+            {translate('log.solved', language)}
+          </Text>
+          <PrimaryButton
+            label={translate('puzzle.returnDesk', language)}
+            onPress={() => router.back()}
+          />
+        </>
       ) : null}
     </ScreenFrame>
   );

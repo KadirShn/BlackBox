@@ -17,6 +17,15 @@ import { maybeRequestReview } from '@/services/review/reviewService';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { colors, radii, spacing, typography } from '@/theme/tokens';
 
+function formatDailyDate(dateKey: string, language: 'tr' | 'en'): string {
+  const [year = 0, month = 1, day = 1] = dateKey.split('-').map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+}
+
 export function ResultScreen({
   caseId,
   stars,
@@ -60,7 +69,14 @@ export function ResultScreen({
   function share(): void {
     void Share.share({
       message: buildShareMessage(
-        { title, dailyDate, stars, hintsUsed, reportMistakes, streak },
+        {
+          title,
+          dailyDate: dailyDate === null ? null : formatDailyDate(dailyDate, language),
+          stars,
+          hintsUsed,
+          reportMistakes,
+          streak,
+        },
         language,
       ),
     }).catch((error: unknown) => {
@@ -123,7 +139,7 @@ export function ResultScreen({
       {dailyDate !== null ? (
         <PrimaryButton
           label={translate('result.home', language)}
-          onPress={() => router.replace('/')}
+          onPress={() => (router.canDismiss() ? router.dismissAll() : router.replace('/'))}
           variant="secondary"
         />
       ) : null}

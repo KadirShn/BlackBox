@@ -1,4 +1,5 @@
 import { translateCase } from '@/content/locales/caseTranslations';
+import { toDisplayUpperCase } from '@/content/locales/translations';
 import {
   fillTemplate,
   missingPlaceholders,
@@ -32,5 +33,13 @@ describe('template translation keys', () => {
     expect(translateCase(withParams('daily.server.title', { system: 'ATLAS-3' }), 'en')).toBe(
       'ATLAS-3 Outage',
     );
+  });
+});
+
+describe('display uppercase', () => {
+  it('keeps Turkish dotted and dotless i distinct', () => {
+    expect(toDisplayUpperCase('Sistem kaydı', 'tr')).toBe('SİSTEM KAYDI');
+    expect(toDisplayUpperCase('1 Ekim', 'tr')).toBe('1 EKİM');
+    expect(toDisplayUpperCase('System log', 'en')).toBe('SYSTEM LOG');
   });
 });

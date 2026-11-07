@@ -10,7 +10,7 @@ import { ErrorState, LoadingState } from '@/components/StateViews';
 import { caseCatalog, getCaseById, getNextCaseId } from '@/content/cases/catalog';
 import { isDailyCaseId } from '@/content/daily/dailyCase';
 import { translateCase } from '@/content/locales/caseTranslations';
-import { translate, type TranslationKey } from '@/content/locales/translations';
+import { toDisplayUpperCase, translate, type TranslationKey } from '@/content/locales/translations';
 import { getRepositories } from '@/data/database/initializeDatabase';
 import {
   countsAsReportMistake,
@@ -156,7 +156,9 @@ export function ReportScreen({ caseId }: { caseId: string }) {
       void playUiSound('success', soundEffectsEnabled);
       clearSession();
       await repositories.sessions.delete(caseId);
-      router.replace({
+      // Close the finished case's screens so back from the result returns home, not to an empty desk.
+      if (router.canDismiss()) router.dismissAll();
+      router.push({
         pathname: '/cases/[caseId]/result',
         params: {
           caseId,
@@ -177,7 +179,7 @@ export function ReportScreen({ caseId }: { caseId: string }) {
   }
 
   return (
-    <ScreenFrame>
+    <ScreenFrame scrollToEndOn={session.reportMistakes}>
       <Text accessibilityRole="header" style={styles.title}>
         {translate('report.title', language)}
       </Text>
@@ -220,7 +222,7 @@ export function ReportScreen({ caseId }: { caseId: string }) {
               language,
             )}
             title={translateCase(evidence.titleKey, language)}
-            typeLabel={translate('report.evidenceType', language)}
+            typeLabel={toDisplayUpperCase(translate('report.evidenceType', language), language)}
           />
         ))}
       </View>

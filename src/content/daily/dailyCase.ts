@@ -342,7 +342,8 @@ export function generateDailyCase(dateKey: string): CaseDefinition {
     briefingKey: key('briefing'),
     difficulty: 'easy',
     estimatedMinutes: 4,
-    evidence: [
+    // Shuffled so the card order never hints at which clue started the incident.
+    evidence: shuffle(random, [
       timelineEvidence(
         'daily-start',
         scenario.evidenceTypes.start,
@@ -376,7 +377,7 @@ export function generateDailyCase(dateKey: string): CaseDefinition {
         unlockCondition: always,
         tags: ['context'],
       },
-    ],
+    ]),
     puzzles: [
       {
         id: 'daily-timeline',

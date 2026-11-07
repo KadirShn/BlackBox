@@ -12,7 +12,14 @@ describe('TimelinePuzzle accessible controls', () => {
     const onMove = jest.fn();
     const onSubmit = jest.fn();
     const screen = await render(
-      <TimelinePuzzle items={items} onMove={onMove} onSubmit={onSubmit} submitLabel="Kontrol et" />,
+      <TimelinePuzzle
+        items={items}
+        moveDownLabel="aşağı taşı"
+        moveUpLabel="yukarı taşı"
+        onMove={onMove}
+        onSubmit={onSubmit}
+        submitLabel="Kontrol et"
+      />,
     );
     await fireEvent.press(screen.getByLabelText('Görev aşağı taşı'));
     expect(onMove).toHaveBeenCalledWith(0, 1);

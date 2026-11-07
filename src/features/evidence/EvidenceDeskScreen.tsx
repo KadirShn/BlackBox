@@ -9,7 +9,7 @@ import { ScreenFrame } from '@/components/ScreenFrame';
 import { ErrorState, LoadingState } from '@/components/StateViews';
 import { getCaseById } from '@/content/cases/catalog';
 import { translateCase } from '@/content/locales/caseTranslations';
-import { translate, type TranslationKey } from '@/content/locales/translations';
+import { toDisplayUpperCase, translate, type TranslationKey } from '@/content/locales/translations';
 import type { CaseDefinition } from '@/domain/case/caseSchema';
 import { getUnlockState } from '@/engine/session/unlocks';
 import { useActiveSession } from '@/features/session/useActiveSession';
@@ -116,7 +116,10 @@ export function EvidenceDeskScreen({ caseId }: { caseId: string }) {
                   ? translate('evidence.locked.title', language)
                   : translateCase(evidence.titleKey, language)
               }
-              typeLabel={translate(evidenceTypeKeys[evidence.type], language)}
+              typeLabel={toDisplayUpperCase(
+                translate(evidenceTypeKeys[evidence.type], language),
+                language,
+              )}
             />
           );
         })}

@@ -49,6 +49,17 @@ describe('daily file generator', () => {
     expect(variants.size).toBe(9);
   });
 
+  it('does not reveal the key clues through their position on the desk', () => {
+    const positions = (id: string) =>
+      new Set(
+        days.map((day) =>
+          generateDailyCase(day).evidence.findIndex((evidence) => evidence.id === id),
+        ),
+      );
+    expect(positions('daily-trigger').size).toBeGreaterThan(3);
+    expect(positions('daily-herring').size).toBeGreaterThan(3);
+  });
+
   it.each(days.map((day) => [day] as const))('%s is valid, translated, and solvable', (day) => {
     const definition = generateDailyCase(day);
 

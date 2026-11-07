@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText as Text } from '@/components/AppText';
 import type { Language } from '@/content/locales/translations';
-import { translate } from '@/content/locales/translations';
+import { toDisplayUpperCase, translate } from '@/content/locales/translations';
 import { colors, layout, radii, spacing, typography } from '@/theme/tokens';
 
 type DailyFileCardProps = {
@@ -42,7 +42,7 @@ export function DailyFileCard({
     >
       <View style={styles.header}>
         <Text style={styles.eyebrow}>
-          {translate('daily.home.eyebrow', language)} · {dateLabel.toUpperCase()}
+          {translate('daily.home.eyebrow', language)} · {toDisplayUpperCase(dateLabel, language)}
         </Text>
         <Text style={styles.streak}>
           {streak > 0

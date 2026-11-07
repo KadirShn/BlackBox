@@ -23,6 +23,7 @@ type HomeProgress = {
   totalStars: number;
   resumeCaseId: string | null;
   dailyResults: readonly DailyResult[];
+  loaded: boolean;
 };
 
 function summarize(
@@ -36,6 +37,7 @@ function summarize(
     totalStars: countEarnedStars(progress),
     resumeCaseId: resume?.caseId ?? null,
     dailyResults,
+    loaded: true,
   };
 }
 
@@ -46,6 +48,7 @@ export function HomeScreen() {
     totalStars: 0,
     resumeCaseId: null,
     dailyResults: [],
+    loaded: false,
   });
 
   useFocusEffect(
@@ -120,7 +123,8 @@ export function HomeScreen() {
         </Text>
         <Text style={styles.online}>{translate('home.offlineSecure', language)}</Text>
       </View>
-      {dailyCase !== null ? (
+      {/* Wait for saved results so the card never flashes "new" for a file already closed. */}
+      {progress.loaded && dailyCase !== null ? (
         <DailyFileCard
           bestStreak={streak.best}
           completedStars={todayResult?.bestStars ?? null}

@@ -262,7 +262,7 @@ const tr = {
   'daily.home.done': '✓ Bugün kapatıldı',
   'daily.home.new': '{minutes} dk · Yeni dosya',
   'daily.home.best': 'En iyi seri: {count}',
-  'result.streak': '🔥 Seri: {count} gün',
+  'result.streak': '🔥 {count} günlük seri',
   'result.share': 'Sonucu paylaş',
   'share.title': 'Black Box · {title}',
   'share.daily': 'Black Box · Günlük Dosya {date}',
@@ -543,7 +543,7 @@ const en: Record<keyof typeof tr, string> = {
   'daily.home.done': '✓ Closed today',
   'daily.home.new': '{minutes} min · New file',
   'daily.home.best': 'Best streak: {count}',
-  'result.streak': '🔥 Streak: {count} days',
+  'result.streak': '🔥 {count}-day streak',
   'result.share': 'Share result',
   'share.title': 'Black Box · {title}',
   'share.daily': 'Black Box · Daily File {date}',
@@ -565,4 +565,10 @@ const dictionaries: Record<Language, Record<TranslationKey, string>> = { tr, en 
 
 export function translate(key: TranslationKey, language: Language): string {
   return dictionaries[language][key];
+}
+
+/** Uppercase with Turkish dotted/dotless i rules, independent of the device's locale data. */
+export function toDisplayUpperCase(text: string, language: Language): string {
+  const prepared = language === 'tr' ? text.replace(/i/g, 'İ').replace(/ı/g, 'I') : text;
+  return prepared.toUpperCase();
 }

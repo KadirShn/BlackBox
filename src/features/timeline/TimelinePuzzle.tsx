@@ -12,11 +12,15 @@ function TimelineRow({
   index,
   total,
   onMove,
+  moveUpLabel,
+  moveDownLabel,
 }: {
   item: TimelineDisplayItem;
   index: number;
   total: number;
   onMove: (direction: -1 | 1) => void;
+  moveUpLabel: string;
+  moveDownLabel: string;
 }) {
   const [translateY] = useState(() => new Animated.Value(0));
   const responder = useMemo(
@@ -51,7 +55,7 @@ function TimelineRow({
       </View>
       <View style={styles.controls}>
         <Pressable
-          accessibilityLabel={`${item.title} yukarı taşı`}
+          accessibilityLabel={`${item.title} ${moveUpLabel}`}
           accessibilityRole="button"
           disabled={index === 0}
           onPress={() => onMove(-1)}
@@ -60,7 +64,7 @@ function TimelineRow({
           <Text style={styles.arrowText}>↑</Text>
         </Pressable>
         <Pressable
-          accessibilityLabel={`${item.title} aşağı taşı`}
+          accessibilityLabel={`${item.title} ${moveDownLabel}`}
           accessibilityRole="button"
           disabled={index === total - 1}
           onPress={() => onMove(1)}
@@ -78,11 +82,15 @@ export function TimelinePuzzle({
   onMove,
   onSubmit,
   submitLabel,
+  moveUpLabel,
+  moveDownLabel,
 }: {
   items: readonly TimelineDisplayItem[];
   onMove: (index: number, direction: -1 | 1) => void;
   onSubmit: () => void;
   submitLabel: string;
+  moveUpLabel: string;
+  moveDownLabel: string;
 }) {
   return (
     <View style={styles.container}>
@@ -92,6 +100,8 @@ export function TimelinePuzzle({
           item={item}
           index={index}
           total={items.length}
+          moveDownLabel={moveDownLabel}
+          moveUpLabel={moveUpLabel}
           onMove={(direction) => onMove(index, direction)}
         />
       ))}

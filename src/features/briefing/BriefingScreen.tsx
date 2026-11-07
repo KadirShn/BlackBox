@@ -9,7 +9,7 @@ import { ErrorState } from '@/components/StateViews';
 import { getCaseById } from '@/content/cases/catalog';
 import { isDailyCaseId } from '@/content/daily/dailyCase';
 import { translateCase } from '@/content/locales/caseTranslations';
-import { translate } from '@/content/locales/translations';
+import { toDisplayUpperCase, translate } from '@/content/locales/translations';
 import { getRepositories } from '@/data/database/initializeDatabase';
 import { logger } from '@/services/logger/logger';
 import { useSettingsStore } from '@/stores/useSettingsStore';
@@ -73,7 +73,7 @@ export function BriefingScreen({ caseId }: { caseId: string }) {
     <ScreenFrame>
       <Text style={styles.eyebrow}>
         {translate('briefing.eyebrow', language)} / {definition.estimatedMinutes}{' '}
-        {translate('case.minutes', language).toUpperCase()}
+        {toDisplayUpperCase(translate('case.minutes', language), language)}
       </Text>
       <Text accessibilityRole="header" style={styles.title}>
         {translateCase(definition.titleKey, language)}

@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accent.secondary,
   },
   header: { flexDirection: 'row', justifyContent: 'space-between', gap: spacing.sm },
-  type: { ...typography.caption, color: colors.accent.primary, textTransform: 'uppercase' },
+  type: { ...typography.caption, color: colors.accent.primary },
   state: { ...typography.caption, color: colors.text.secondary },
   title: { ...typography.sectionTitle, color: colors.text.primary },
   description: { ...typography.body, color: colors.text.secondary },

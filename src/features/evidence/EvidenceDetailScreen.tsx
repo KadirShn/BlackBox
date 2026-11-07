@@ -8,7 +8,7 @@ import { ScreenFrame } from '@/components/ScreenFrame';
 import { ErrorState } from '@/components/StateViews';
 import { getCaseById } from '@/content/cases/catalog';
 import { translateCase } from '@/content/locales/caseTranslations';
-import { translate, type TranslationKey } from '@/content/locales/translations';
+import { toDisplayUpperCase, translate, type TranslationKey } from '@/content/locales/translations';
 import type { CaseDefinition } from '@/domain/case/caseSchema';
 import { useSessionStore } from '@/stores/useSessionStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
@@ -51,7 +51,7 @@ export function EvidenceDetailScreen({
   return (
     <ScreenFrame>
       <Text style={styles.eyebrow}>
-        {translate(evidenceTypeKeys[evidence.type], language).toUpperCase()}
+        {toDisplayUpperCase(translate(evidenceTypeKeys[evidence.type], language), language)}
       </Text>
       <Text accessibilityRole="header" style={styles.title}>
         {translateCase(evidence.titleKey, language)}
