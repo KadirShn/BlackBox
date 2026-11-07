@@ -6,36 +6,55 @@ import { AppText as Text } from '@/components/AppText';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { SignalCore } from '@/components/SignalCore';
 import { caseCatalog, getCaseById } from '@/content/cases/catalog';
+import { dailyCaseId, getDailyCase, localDateKey } from '@/content/daily/dailyCase';
 import { translateCase } from '@/content/locales/caseTranslations';
 import { translate } from '@/content/locales/translations';
 import { getRepositories } from '@/data/database/initializeDatabase';
+import type { DailyResult } from '@/domain/daily/dailyResult';
 import type { PlayerProgress } from '@/domain/progression/playerProgress';
+import { computeStreak } from '@/engine/daily/streak';
 import { countEarnedStars, getRankStatus } from '@/engine/progression/rank';
+import { DailyFileCard } from '@/features/daily/DailyFileCard';
 import { logger } from '@/services/logger/logger';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { colors, layout, radii, spacing, typography } from '@/theme/tokens';
 
-type HomeProgress = { totalStars: number; resumeCaseId: string | null };
+type HomeProgress = {
+  totalStars: number;
+  resumeCaseId: string | null;
+  dailyResults: readonly DailyResult[];
+};
 
-function summarize(progress: readonly PlayerProgress[]): HomeProgress {
+function summarize(
+  progress: readonly PlayerProgress[],
+  dailyResults: readonly DailyResult[],
+): HomeProgress {
   const resume = progress
     .filter((item) => item.status === 'in_progress' && getCaseById(item.caseId) !== null)
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0];
-  return { totalStars: countEarnedStars(progress), resumeCaseId: resume?.caseId ?? null };
+  return {
+    totalStars: countEarnedStars(progress),
+    resumeCaseId: resume?.caseId ?? null,
+    dailyResults,
+  };
 }
 
 export function HomeScreen() {
   const router = useRouter();
   const language = useSettingsStore((state) => state.language);
-  const [progress, setProgress] = useState<HomeProgress>({ totalStars: 0, resumeCaseId: null });
+  const [progress, setProgress] = useState<HomeProgress>({
+    totalStars: 0,
+    resumeCaseId: null,
+    dailyResults: [],
+  });
 
   useFocusEffect(
     useCallback(() => {
       let active = true;
-      void getRepositories()
-        .progress.list()
-        .then((items) => {
-          if (active) setProgress(summarize(items));
+      const repositories = getRepositories();
+      void Promise.all([repositories.progress.list(), repositories.daily.list()])
+        .then(([items, dailyResults]) => {
+          if (active) setProgress(summarize(items, dailyResults));
         })
         .catch((error: unknown) => {
           logger.warn('Home progress load failed', {
@@ -51,6 +70,15 @@ export function HomeScreen() {
   const rank = getRankStatus(progress.totalStars, caseCatalog.length);
   const resumeCase = progress.resumeCaseId === null ? null : getCaseById(progress.resumeCaseId);
   const fill = rank.maxStars === 0 ? 0 : rank.totalStars / rank.maxStars;
+  const now = new Date();
+  const today = localDateKey(now);
+  const todayCaseId = dailyCaseId(today);
+  const dailyCase = getDailyCase(todayCaseId);
+  const todayResult = progress.dailyResults.find((item) => item.date === today);
+  const streak = computeStreak(
+    progress.dailyResults.map((item) => item.date),
+    today,
+  );
 
   return (
     <ScrollView contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="automatic">
@@ -92,6 +120,24 @@ export function HomeScreen() {
         </Text>
         <Text style={styles.online}>{translate('home.offlineSecure', language)}</Text>
       </View>
+      {dailyCase !== null ? (
+        <DailyFileCard
+          bestStreak={streak.best}
+          completedStars={todayResult?.bestStars ?? null}
+          dateLabel={now.toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US', {
+            day: 'numeric',
+            month: 'long',
+          })}
+          estimatedMinutes={dailyCase.estimatedMinutes}
+          language={language}
+          onPress={() =>
+            router.push({ pathname: '/cases/[caseId]', params: { caseId: todayCaseId } })
+          }
+          streak={streak.current}
+          summary={translateCase(dailyCase.summaryKey, language)}
+          title={translateCase(dailyCase.titleKey, language)}
+        />
+      ) : null}
       <View style={styles.actions}>
         {resumeCase !== null ? (
           <PrimaryButton

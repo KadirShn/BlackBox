@@ -46,4 +46,17 @@ export const migrations: readonly Migration[] = [
       WHERE key = 'app';
     `,
   },
+  {
+    version: 3,
+    name: 'daily-results',
+    sql: `
+      CREATE TABLE IF NOT EXISTS daily_results (
+        date TEXT PRIMARY KEY NOT NULL,
+        best_stars INTEGER NOT NULL,
+        hints_used INTEGER NOT NULL,
+        report_mistakes INTEGER NOT NULL,
+        completed_at TEXT NOT NULL
+      );
+    `,
+  },
 ];

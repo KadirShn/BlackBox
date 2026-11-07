@@ -104,9 +104,11 @@ export function EvidenceDeskScreen({ caseId }: { caseId: string }) {
               stateLabel={translate(
                 locked
                   ? 'evidence.state.locked'
-                  : opened
-                    ? 'evidence.state.opened'
-                    : 'evidence.state.new',
+                  : session.markedFieldIds.includes(evidence.id)
+                    ? 'evidence.state.marked'
+                    : opened
+                      ? 'evidence.state.opened'
+                      : 'evidence.state.new',
                 language,
               )}
               title={

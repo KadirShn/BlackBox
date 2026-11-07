@@ -8,6 +8,7 @@ import { PrimaryButton } from '@/components/PrimaryButton';
 import { ScreenFrame } from '@/components/ScreenFrame';
 import { ErrorState, LoadingState } from '@/components/StateViews';
 import { caseCatalog, getCaseById, getNextCaseId } from '@/content/cases/catalog';
+import { isDailyCaseId } from '@/content/daily/dailyCase';
 import { translateCase } from '@/content/locales/caseTranslations';
 import { translate, type TranslationKey } from '@/content/locales/translations';
 import { getRepositories } from '@/data/database/initializeDatabase';
@@ -17,6 +18,7 @@ import {
   type ReportRejection,
 } from '@/engine/scoring/scoringEngine';
 import { evaluateAchievements } from '@/engine/achievements/evaluateAchievements';
+import { recordDailyCompletion } from '@/features/daily/recordDailyCompletion';
 import { useActiveSession } from '@/features/session/useActiveSession';
 import { logger } from '@/services/logger/logger';
 import { playFeedbackHaptic } from '@/services/haptics/hapticsService';
@@ -70,6 +72,14 @@ export function ReportScreen({ caseId }: { caseId: string }) {
 
   const activeSession = session;
   const caseDefinition = definition;
+  // Clues the player marked in the notebook come first; the rest keep their case order.
+  const reportEvidence = definition.evidence
+    .filter((evidence) => session.openedEvidenceIds.includes(evidence.id))
+    .sort(
+      (a, b) =>
+        Number(session.markedFieldIds.includes(b.id)) -
+        Number(session.markedFieldIds.includes(a.id)),
+    );
 
   async function submit(): Promise<void> {
     if (activeSession.selectedHypothesisId === null) {
@@ -103,34 +113,45 @@ export function ReportScreen({ caseId }: { caseId: string }) {
     setSubmitting(true);
     try {
       const repositories = getRepositories();
-      const previous = await repositories.progress.get(caseId);
       const timestamp = new Date().toISOString();
-      await repositories.progress.completeAndUnlockNext(
-        {
+      let streak: number | null = null;
+      if (isDailyCaseId(caseId)) {
+        streak = await recordDailyCompletion(repositories, {
           caseId,
-          status: 'completed',
-          bestStars: evaluation.stars,
-          attempts: previous?.attempts ?? 1,
-          hintsUsedBest:
-            previous?.hintsUsedBest === null || previous?.hintsUsedBest === undefined
-              ? activeSession.hintsUsed
-              : Math.min(previous.hintsUsedBest, activeSession.hintsUsed),
-          completedAt: timestamp,
-          updatedAt: timestamp,
-        },
-        getNextCaseId(caseId),
-      );
-      const progress = await repositories.progress.list();
-      await repositories.achievements.unlock(
-        evaluateAchievements({
-          catalog: caseCatalog,
-          definition: caseDefinition,
-          session: activeSession,
-          progress,
           stars: evaluation.stars,
-        }),
-        timestamp,
-      );
+          hintsUsed: activeSession.hintsUsed,
+          reportMistakes: activeSession.reportMistakes,
+          timestamp,
+        });
+      } else {
+        const previous = await repositories.progress.get(caseId);
+        await repositories.progress.completeAndUnlockNext(
+          {
+            caseId,
+            status: 'completed',
+            bestStars: evaluation.stars,
+            attempts: previous?.attempts ?? 1,
+            hintsUsedBest:
+              previous?.hintsUsedBest === null || previous?.hintsUsedBest === undefined
+                ? activeSession.hintsUsed
+                : Math.min(previous.hintsUsedBest, activeSession.hintsUsed),
+            completedAt: timestamp,
+            updatedAt: timestamp,
+          },
+          getNextCaseId(caseId),
+        );
+        const progress = await repositories.progress.list();
+        await repositories.achievements.unlock(
+          evaluateAchievements({
+            catalog: caseCatalog,
+            definition: caseDefinition,
+            session: activeSession,
+            progress,
+            stars: evaluation.stars,
+          }),
+          timestamp,
+        );
+      }
       void playFeedbackHaptic(hapticsEnabled, 'success');
       void playUiSound('success', soundEffectsEnabled);
       clearSession();
@@ -142,6 +163,7 @@ export function ReportScreen({ caseId }: { caseId: string }) {
           stars: String(evaluation.stars),
           hints: String(activeSession.hintsUsed),
           mistakes: String(activeSession.reportMistakes),
+          ...(streak === null ? {} : { streak: String(streak) }),
         },
       });
     } catch (caught: unknown) {
@@ -180,21 +202,27 @@ export function ReportScreen({ caseId }: { caseId: string }) {
         );
       })}
       <Text style={styles.sectionTitle}>{translate('report.evidence', language)}</Text>
+      {reportEvidence.some((evidence) => session.markedFieldIds.includes(evidence.id)) ? (
+        <Text style={styles.markedNote}>{translate('report.markedFirst', language)}</Text>
+      ) : null}
       <View style={styles.evidenceList}>
-        {definition.evidence
-          .filter((evidence) => session.openedEvidenceIds.includes(evidence.id))
-          .map((evidence) => (
-            <EvidenceCard
-              description={translateCase(evidence.descriptionKey, language)}
-              key={evidence.id}
-              onPress={() => toggleEvidence(evidence.id)}
-              opened
-              selected={session.selectedEvidenceIds.includes(evidence.id)}
-              stateLabel={translate('evidence.state.opened', language)}
-              title={translateCase(evidence.titleKey, language)}
-              typeLabel={translate('report.evidenceType', language)}
-            />
-          ))}
+        {reportEvidence.map((evidence) => (
+          <EvidenceCard
+            description={translateCase(evidence.descriptionKey, language)}
+            key={evidence.id}
+            onPress={() => toggleEvidence(evidence.id)}
+            opened
+            selected={session.selectedEvidenceIds.includes(evidence.id)}
+            stateLabel={translate(
+              session.markedFieldIds.includes(evidence.id)
+                ? 'evidence.state.marked'
+                : 'evidence.state.opened',
+              language,
+            )}
+            title={translateCase(evidence.titleKey, language)}
+            typeLabel={translate('report.evidenceType', language)}
+          />
+        ))}
       </View>
       {session.reportMistakes > 0 ? (
         <Text style={styles.mistakes}>
@@ -236,4 +264,5 @@ const styles = StyleSheet.create({
   evidenceList: { gap: spacing.md },
   feedback: { ...typography.body, color: colors.status.danger },
   mistakes: { ...typography.caption, color: colors.status.warning },
+  markedNote: { ...typography.caption, color: colors.text.secondary },
 });

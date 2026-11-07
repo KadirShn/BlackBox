@@ -55,4 +55,15 @@ export class ActiveSessionRepository {
   public async delete(caseId: string): Promise<void> {
     await this.database.runAsync('DELETE FROM active_sessions WHERE case_id = ?', [caseId]);
   }
+
+  /** Daily files expire with their day, so their unfinished sessions are dropped at startup. */
+  public async deleteDailyExcept(keepCaseIds: readonly string[]): Promise<void> {
+    const placeholders = keepCaseIds.map(() => '?').join(', ');
+    await this.database.runAsync(
+      keepCaseIds.length === 0
+        ? "DELETE FROM active_sessions WHERE case_id LIKE 'daily-%'"
+        : `DELETE FROM active_sessions WHERE case_id LIKE 'daily-%' AND case_id NOT IN (${placeholders})`,
+      [...keepCaseIds],
+    );
+  }
 }

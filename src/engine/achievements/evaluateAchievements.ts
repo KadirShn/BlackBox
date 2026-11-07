@@ -74,3 +74,12 @@ export function evaluateAchievements(context: AchievementEvaluationContext): Ach
   }
   return [...unlocked];
 }
+
+export function evaluateDailyAchievements(streak: {
+  current: number;
+  best: number;
+}): AchievementId[] {
+  const unlocked: AchievementId[] = ['daily-detective'];
+  if (Math.max(streak.current, streak.best) >= 7) unlocked.push('streak-seven');
+  return unlocked;
+}

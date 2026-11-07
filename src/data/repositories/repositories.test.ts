@@ -58,8 +58,8 @@ describe('SQLite migrations and repositories', () => {
 
   it('runs migration idempotently and performs basic CRUD', async () => {
     const database = new NodeSqlDatabase();
-    await expect(runMigrations(database)).resolves.toBe(2);
-    await expect(runMigrations(database)).resolves.toBe(2);
+    await expect(runMigrations(database)).resolves.toBe(3);
+    await expect(runMigrations(database)).resolves.toBe(3);
 
     const repositories = createRepositories(database);
     const updatedAt = '2026-08-04T00:00:00.000Z';
@@ -151,6 +151,50 @@ describe('SQLite migrations and repositories', () => {
     await expect(repositories.progress.get('c')).resolves.toBeNull();
   });
 
+  it('keeps the best daily result and drops expired daily sessions', async () => {
+    const database = new NodeSqlDatabase();
+    const repositories = await prepareDatabase(database, () => '2026-11-07T12:00:00.000Z', []);
+    const result = {
+      date: '2026-11-07',
+      bestStars: 2 as const,
+      hintsUsed: 1,
+      reportMistakes: 1,
+      completedAt: '2026-11-07T12:00:00.000Z',
+    };
+    await repositories.daily.record(result);
+    await repositories.daily.record({
+      ...result,
+      bestStars: 3,
+      hintsUsed: 0,
+      reportMistakes: 0,
+      completedAt: '2026-11-07T13:00:00.000Z',
+    });
+    await repositories.daily.record({ ...result, bestStars: 1, hintsUsed: 2 });
+    await expect(repositories.daily.list()).resolves.toEqual([
+      { ...result, bestStars: 3, hintsUsed: 0, reportMistakes: 0 },
+    ]);
+
+    const session = (caseId: string): ActiveSession => ({
+      caseId,
+      openedEvidenceIds: [],
+      markedFieldIds: [],
+      puzzleStates: {},
+      hintsUsed: 0,
+      selectedHypothesisId: null,
+      selectedEvidenceIds: [],
+      reportMistakes: 0,
+      updatedAt: '2026-11-07T12:00:00.000Z',
+    });
+    for (const caseId of ['daily-2026-11-01', 'daily-2026-11-07', 'case-night-route']) {
+      await repositories.sessions.save(session(caseId));
+    }
+    await prepareDatabase(database, () => '2026-11-07T12:00:00.000Z', []);
+
+    await expect(repositories.sessions.get('daily-2026-11-01')).resolves.toBeNull();
+    await expect(repositories.sessions.get('daily-2026-11-07')).resolves.not.toBeNull();
+    await expect(repositories.sessions.get('case-night-route')).resolves.not.toBeNull();
+  });
+
   it('upgrades schema version 1 settings without losing the existing values', async () => {
     const database = new NodeSqlDatabase();
     const firstMigration = migrations[0];
@@ -173,7 +217,7 @@ describe('SQLite migrations and repositories', () => {
       }),
     ]);
 
-    await expect(runMigrations(database)).resolves.toBe(2);
+    await expect(runMigrations(database)).resolves.toBe(3);
     const repositories = createRepositories(database);
     await expect(repositories.settings.get()).resolves.toEqual({
       language: 'en',

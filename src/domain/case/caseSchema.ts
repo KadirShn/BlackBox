@@ -162,7 +162,7 @@ const hypothesisSchema = z.object({
 export const caseSchema = z.object({
   id: z.string().min(1),
   schemaVersion: z.number().int().positive(),
-  chapter: z.number().int().min(1),
+  chapter: z.number().int().min(0),
   titleKey: z.string().min(1),
   summaryKey: z.string().min(1),
   briefingKey: z.string().min(1),

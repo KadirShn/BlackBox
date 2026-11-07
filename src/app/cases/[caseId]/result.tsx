@@ -15,6 +15,7 @@ export default function ResultRoute() {
     stars?: string | string[];
     hints?: string | string[];
     mistakes?: string | string[];
+    streak?: string | string[];
   }>();
   const caseId = firstRouteParam(params.caseId);
   const starsValue = Number(firstRouteParam(params.stars));
@@ -26,6 +27,7 @@ export default function ResultRoute() {
       caseId={caseId}
       hintsUsed={countParam(params.hints)}
       reportMistakes={countParam(params.mistakes)}
+      streak={countParam(params.streak)}
       stars={stars}
     />
   );

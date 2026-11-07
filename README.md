@@ -19,7 +19,10 @@ Black Box: Incident Investigator, dijital delilleri inceleyerek olayları çözm
 - Timeline, log analizi, çelişki, bağlantı ve kod çözme puzzle'ları
 - Analiz ilerledikçe açılan şifreli deliller ve kamera kareleri
 - Kademeli rapor geri bildirimi; yanıltıcı delil ve reddedilen rapor cezası
-- Yıldızlarla yükselen müfettiş rütbesi ve on bir başarım
+- Her gün yenilenen, çevrimdışı üretilen Günlük Dosya ve seri sayacı
+- Deftere işaretlenen delillerin rapor ekranında öne çıkması
+- Spoiler içermeyen sonuç paylaşımı ve uygulama içi değerlendirme
+- Yıldızlarla yükselen müfettiş rütbesi ve on üç başarım
 - Prosedürel ambiyans müziği
 - Veri odaklı ve çalışma zamanında doğrulanan vaka içerikleri
 - Çevrimdışı oynanış ve SQLite tabanlı yerel kayıt sistemi

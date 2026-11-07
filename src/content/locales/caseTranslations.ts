@@ -2,6 +2,12 @@ import {
   chapterTwoTranslationsEn,
   chapterTwoTranslationsTr,
 } from '@/content/locales/chapterTwoTranslations';
+import { dailyTranslationsEn, dailyTranslationsTr } from '@/content/locales/dailyTranslations';
+import {
+  fillTemplate,
+  missingPlaceholders,
+  splitTemplateKey,
+} from '@/content/locales/templateKeys';
 import type { Language } from '@/content/locales/translations';
 import {
   remainingCaseTranslationsEn,
@@ -11,6 +17,7 @@ import {
 const tr: Record<string, string> = {
   ...remainingCaseTranslationsTr,
   ...chapterTwoTranslationsTr,
+  ...dailyTranslationsTr,
   'cases.tutorial.title': 'Kayıp 11 Dakika',
   'cases.tutorial.summary': 'Bir teslimat dronunun kayıp kayıt aralığını incele.',
   'cases.tutorial.briefing':
@@ -94,6 +101,7 @@ const tr: Record<string, string> = {
 const en: Record<string, string> = {
   ...remainingCaseTranslationsEn,
   ...chapterTwoTranslationsEn,
+  ...dailyTranslationsEn,
   'cases.tutorial.title': 'The Missing 11 Minutes',
   'cases.tutorial.summary': 'Investigate a missing interval in a delivery drone log.',
   'cases.tutorial.briefing':
@@ -184,9 +192,13 @@ const en: Record<string, string> = {
 const dictionaries: Record<Language, Record<string, string>> = { tr, en };
 
 export function translateCase(key: string, language: Language): string {
-  return dictionaries[language][key] ?? `[missing:${key}]`;
+  const { base, params } = splitTemplateKey(key);
+  const text = dictionaries[language][base];
+  return text === undefined ? `[missing:${base}]` : fillTemplate(text, params);
 }
 
 export function hasCaseTranslation(key: string, language: Language): boolean {
-  return dictionaries[language][key] !== undefined;
+  const { base, params } = splitTemplateKey(key);
+  const text = dictionaries[language][base];
+  return text !== undefined && missingPlaceholders(text, params).length === 0;
 }

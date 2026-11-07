@@ -9,3 +9,8 @@ jest.mock('expo-audio', () => ({
   })),
   setAudioModeAsync: jest.fn(async () => undefined),
 }));
+
+jest.mock('expo-store-review', () => ({
+  isAvailableAsync: jest.fn(async () => true),
+  requestReview: jest.fn(async () => undefined),
+}));

@@ -1,10 +1,13 @@
 import { openDatabaseAsync } from 'expo-sqlite';
 
 import { caseCatalog } from '@/content/cases/catalog';
+import { dailyCaseId, localDateKey, shiftDateKey } from '@/content/daily/dailyCase';
 import { ExpoSqlDatabase, type SqlDatabase } from '@/data/database/sqlDatabase';
 import { runMigrations } from '@/data/migrations/runMigrations';
 import { ActiveSessionRepository } from '@/data/repositories/ActiveSessionRepository';
 import { AchievementRepository } from '@/data/repositories/AchievementRepository';
+import { AppMetaRepository } from '@/data/repositories/AppMetaRepository';
+import { DailyRepository } from '@/data/repositories/DailyRepository';
 import { ProgressRepository } from '@/data/repositories/ProgressRepository';
 import { SettingsRepository } from '@/data/repositories/SettingsRepository';
 
@@ -13,6 +16,8 @@ export type Repositories = {
   sessions: ActiveSessionRepository;
   settings: SettingsRepository;
   achievements: AchievementRepository;
+  daily: DailyRepository;
+  meta: AppMetaRepository;
 };
 
 let repositories: Repositories | null = null;
@@ -55,6 +60,11 @@ export async function prepareDatabase(
     });
   }
   await preparedRepositories.progress.unlockAfterCompleted(orderedCaseIds, currentTime());
+  const today = localDateKey(new Date(currentTime()));
+  await preparedRepositories.sessions.deleteDailyExcept([
+    dailyCaseId(today),
+    dailyCaseId(shiftDateKey(today, -1)),
+  ]);
   return preparedRepositories;
 }
 
@@ -64,6 +74,8 @@ export function createRepositories(database: SqlDatabase): Repositories {
     sessions: new ActiveSessionRepository(database),
     settings: new SettingsRepository(database),
     achievements: new AchievementRepository(database),
+    daily: new DailyRepository(database),
+    meta: new AppMetaRepository(database),
   };
 }
 

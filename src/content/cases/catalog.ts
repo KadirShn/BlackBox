@@ -1,6 +1,7 @@
 import { caseSchema, type CaseDefinition } from '@/domain/case/caseSchema';
 import { blackBoxCase } from '@/content/cases/black-box';
 import { coldChainCase } from '@/content/cases/cold-chain';
+import { getDailyCase, isDailyCaseId } from '@/content/daily/dailyCase';
 import { ghostSignalCase } from '@/content/cases/ghost-signal';
 import { lastSignatureCase } from '@/content/cases/last-signature';
 import { nightRouteCase } from '@/content/cases/night-route';
@@ -47,6 +48,7 @@ export const caseCatalog = parsedCatalog.cases;
 export const caseCatalogIssues = parsedCatalog.issues;
 
 export function getCaseById(caseId: string): CaseDefinition | null {
+  if (isDailyCaseId(caseId)) return getDailyCase(caseId);
   return caseCatalog.find((item) => item.id === caseId) ?? null;
 }
 

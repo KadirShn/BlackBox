@@ -12,6 +12,8 @@ export const achievementIds = [
   'chapter-two',
   'all-cases',
   'perfect-archive',
+  'daily-detective',
+  'streak-seven',
 ] as const;
 
 export const achievementIdSchema = z.enum(achievementIds);

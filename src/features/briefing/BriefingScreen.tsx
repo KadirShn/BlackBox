@@ -7,6 +7,7 @@ import { PrimaryButton } from '@/components/PrimaryButton';
 import { ScreenFrame } from '@/components/ScreenFrame';
 import { ErrorState } from '@/components/StateViews';
 import { getCaseById } from '@/content/cases/catalog';
+import { isDailyCaseId } from '@/content/daily/dailyCase';
 import { translateCase } from '@/content/locales/caseTranslations';
 import { translate } from '@/content/locales/translations';
 import { getRepositories } from '@/data/database/initializeDatabase';
@@ -43,16 +44,19 @@ export function BriefingScreen({ caseId }: { caseId: string }) {
       const existingSession = recovery.session;
       const session = existingSession ?? createSession(caseId);
       await repositories.sessions.save(session);
-      const progress = await repositories.progress.get(caseId);
-      await repositories.progress.save({
-        caseId,
-        status: progress?.status === 'completed' ? 'completed' : 'in_progress',
-        bestStars: progress?.bestStars ?? 0,
-        attempts: (progress?.attempts ?? 0) + (existingSession === null ? 1 : 0),
-        hintsUsedBest: progress?.hintsUsedBest ?? null,
-        completedAt: progress?.completedAt ?? null,
-        updatedAt: new Date().toISOString(),
-      });
+      // The daily file keeps its own results and never enters story progression.
+      if (!isDailyCaseId(caseId)) {
+        const progress = await repositories.progress.get(caseId);
+        await repositories.progress.save({
+          caseId,
+          status: progress?.status === 'completed' ? 'completed' : 'in_progress',
+          bestStars: progress?.bestStars ?? 0,
+          attempts: (progress?.attempts ?? 0) + (existingSession === null ? 1 : 0),
+          hintsUsedBest: progress?.hintsUsedBest ?? null,
+          completedAt: progress?.completedAt ?? null,
+          updatedAt: new Date().toISOString(),
+        });
+      }
       load(session);
       router.replace({ pathname: '/cases/[caseId]/desk', params: { caseId } });
     } catch (caught: unknown) {
